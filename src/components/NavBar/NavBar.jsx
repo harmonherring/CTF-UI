@@ -25,7 +25,7 @@ class NavBar extends React.Component {
       <div>
         <Navbar color="primary" dark expand="lg" fixed="top">
           <Container>
-            <NavLink to="/" className={'navbar-brand'}>React Boilerplate</NavLink>
+            <NavLink to="/" className={'navbar-brand'}>Capture the Flag</NavLink>
             <NavbarToggler onClick={this.toggle}/>
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav navbar>
