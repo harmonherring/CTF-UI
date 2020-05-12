@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import InfoSpinner from '../InfoSpinner'
+import { Container } from 'reactstrap';
+import Challenge from './Challenge';
 
 class Home extends Component {
   constructor (props) {
@@ -18,7 +19,11 @@ class Home extends Component {
     }
 
     render () {
-      return (<InfoSpinner>Loading Content</InfoSpinner>)
+      return (
+        <Container>
+          <Challenge />
+        </Container>
+      );
     }
 }
 
