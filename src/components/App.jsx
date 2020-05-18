@@ -7,7 +7,8 @@ import ProtectedRoute from '../containers/ProtectedRoute'
 import OidcCallback from '../containers/OidcCallback'
 import {
   Home,
-  NavBar
+  NavBar,
+  Admin
 } from './index'
 
 class App extends Component {
@@ -20,6 +21,7 @@ class App extends Component {
             <Switch>
               <Route exact path="/callback" component={OidcCallback}/>
               <ProtectedRoute exact path="/" component={Home}/>
+              <ProtectedRoute exact path="/admin" component={Admin} />
             </Switch>
           </Container>
         </Container>
