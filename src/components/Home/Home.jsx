@@ -3,15 +3,13 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Container } from 'reactstrap';
 import Challenge from './Challenge';
-<<<<<<< HEAD
-=======
 import styled from 'styled-components';
 import { GET } from '../../actions/get';
+import styled from 'styled-components';
 
 const StyledChallenge = styled(Challenge)`
   box-shadow 0 1px 4px rgba(0, 0, 0, 0.4);
 `;
->>>>>>> b01f6c8... Placeholder Home page, create Admin page, allow OidcCallback to redirect to any page
 
 class Home extends Component {
   constructor (props) {
@@ -33,8 +31,16 @@ class Home extends Component {
     render () {
       return (
         <Container>
-          <Challenge />
+          <StyledChallenge 
+              title="Title Here" 
+              description="A good description" 
+              submitter_username="harmon" 
+              submitter_full_name="Harmon Herring" 
+              ts="May 11, 2020" 
+              flags={{1: {"point_value": 25, "flag": "abc"}, 2: {"point_value": 25}}} 
+              tags={["Web", "Wordpress", "PHP"]} />
         </Container>
+        
       );
     }
 }
