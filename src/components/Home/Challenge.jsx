@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import { Badge, Alert, Row, Col } from 'reactstrap';
+import { Badge, Row, Col } from 'reactstrap';
 import { FaFlag } from 'react-icons/fa';
 
 const ChallengeContainer = styled.div`
@@ -28,17 +28,13 @@ const BadgeWrapper = styled.h5`
     margin: 2px;
 `;
 
-const AlertWrapper = styled(Alert)`
-    display: inline-block;
-`;
-
 class Challenge extends Component {
     constructor(props) {
         super(props);
 
         let count = 0
-        for (const [key, value] of Object.entries(this.props.flags)) {
-            if ("flag" in value) {
+        for (const key of Object.keys(this.props.flags)) {
+            if ("flag" in this.props.flags[key]) {
                 count++;
             }
         }
@@ -55,7 +51,7 @@ class Challenge extends Component {
                 <ChallengeBody>
                     <Row>
                          <Col>
-                            <h1 style={{"display": "inline-block"}}><a href="#" style={{"text-decoration": "none"}}>{this.props.title}</a></h1>
+                            <h1 style={{"display": "inline-block"}}><a href={window.location.href} style={{"text-decoration": "none"}}>{this.props.title}</a></h1>
                         </Col>
                          <Col>
                             <h2 className="float-right" style={{"color": "#4CAF50"}}>{this.state.completedFlags}/{Object.keys(this.props.flags).length} <FaFlag /></h2>
@@ -74,7 +70,7 @@ class Challenge extends Component {
                     <p>{this.props.description}</p>
                 </ChallengeBody>
                 <ChallengeFooter>
-                    Submitted by <a href="#">{this.props.submitter_username}</a> on {this.props.ts}
+                    Submitted by <a href={window.location.href}>{this.props.submitter_username}</a> on {this.props.ts}
                 </ChallengeFooter>
             </ChallengeContainer>
         );

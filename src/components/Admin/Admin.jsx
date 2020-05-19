@@ -138,7 +138,7 @@ class Admin extends Component {
         DELETE(this.props.oidc.user.access_token, "/categories/" + categoryName, {})
         .then(response => Promise.all([response.status, response.json()]))
         .then(response => {
-            if (response[0] == 200) {
+            if (response[0] === 200) {
                 this.getCategories();
             } else {
                 this.setState({
