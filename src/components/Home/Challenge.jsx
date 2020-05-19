@@ -51,7 +51,7 @@ class Challenge extends Component {
                 <ChallengeBody>
                     <Row>
                          <Col>
-                            <h1 style={{"display": "inline-block"}}><a href={window.location.href} style={{"text-decoration": "none"}}>{this.props.title}</a></h1>
+                            <h1 style={{"display": "inline-block"}}><a href={window.location.href} style={{"textDecoration": "none"}}>{this.props.title}</a></h1>
                         </Col>
                          <Col>
                             <h2 className="float-right" style={{"color": "#4CAF50"}}>{this.state.completedFlags}/{Object.keys(this.props.flags).length} <FaFlag /></h2>

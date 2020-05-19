@@ -4,9 +4,7 @@ import { connect } from 'react-redux'
 import { Container, Row, Col, ListGroup, ListGroupItem, Badge, Input, Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Label, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import styled from 'styled-components';
-import { GET } from '../../actions/get';
-import { POST } from '../../actions/post';
-import { DELETE } from '../../actions/delete';
+import { GET, POST, DELETE } from '../../actions';
 
 
 const StyledInput = styled(Input)`

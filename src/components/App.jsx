@@ -16,7 +16,7 @@ class App extends Component {
     return (
       <ConnectedRouter history={history}>
         <Container className="main" fluid>
-          <NavBar/>
+          <NavBar />
           <Container>
             <Switch>
               <Route exact path="/callback" component={OidcCallback}/>
