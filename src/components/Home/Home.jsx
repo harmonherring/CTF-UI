@@ -5,7 +5,6 @@ import { Container } from 'reactstrap';
 import Challenge from './Challenge';
 import styled from 'styled-components';
 import { GET } from '../../actions/get';
-import styled from 'styled-components';
 
 const StyledChallenge = styled(Challenge)`
   box-shadow 0 1px 4px rgba(0, 0, 0, 0.4);

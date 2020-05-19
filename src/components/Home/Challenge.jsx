@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import { Badge, Alert, Row, Col } from 'reactstrap';
+import { FaFlag } from 'react-icons/fa';
 
 const ChallengeContainer = styled.div`
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
@@ -57,7 +58,7 @@ class Challenge extends Component {
                             <h1 style={{"display": "inline-block"}}><a href="#" style={{"text-decoration": "none"}}>{this.props.title}</a></h1>
                         </Col>
                          <Col>
-        <AlertWrapper className="float-right" color="primary"><h2 style={{"margin": 0, "float": "right"}}>Flags: {this.state.completedFlags}/{Object.keys(this.props.flags).length}</h2></AlertWrapper>
+                            <h2 className="float-right" style={{"color": "#4CAF50"}}>{this.state.completedFlags}/{Object.keys(this.props.flags).length} <FaFlag /></h2>
                         </Col>
                     </Row>
                     <Row>
