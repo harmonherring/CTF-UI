@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Collapse, Container, Nav, Navbar, NavbarToggler, NavItem } from 'reactstrap'
 import { NavLink } from 'react-router-dom'
 import UserProfile from '../../containers/UserProfile'
@@ -32,6 +33,7 @@ class NavBar extends React.Component {
                 <NavItem>
                   <NavLink to="/" className={'nav-link'}>Home</NavLink>
                 </NavItem>
+                { this.props.admin ? <NavItem><NavLink to="/admin" className={'nav-link'}>Admin</NavLink></NavItem> : <></> }
               </Nav>
               <Nav navbar className="ml-auto">
                 <UserProfile/>
@@ -44,6 +46,8 @@ class NavBar extends React.Component {
   }
 }
 
-NavBar.propTypes = {}
+NavBar.propTypes = {
+  admin: PropTypes.bool
+}
 
 export default NavBar
