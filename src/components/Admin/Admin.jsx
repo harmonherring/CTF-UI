@@ -5,6 +5,7 @@ import { Container, Row, Col, ListGroup, ListGroupItem, Badge, Input, Button, Mo
 import { FaRegTrashAlt } from 'react-icons/fa';
 import styled from 'styled-components';
 import { GET, POST, DELETE } from '../../actions';
+import { Redirect } from 'react-router';
 
 
 const StyledInput = styled(Input)`
@@ -30,8 +31,6 @@ const StyledListItem = styled(ListGroupItem)`
 `;
 
 
-
-
 class Admin extends Component {
     constructor (props) {
         super(props)
@@ -54,6 +53,7 @@ class Admin extends Component {
             deletionModalBody: "",
             deletionModalFooter: "",
             categoryDeletionError: "",
+            admin: true
         }
     }
 
@@ -65,6 +65,16 @@ class Admin extends Component {
     }
 
     componentDidMount () {
+        GET(this.props.oidc.user.access_token, "/user")
+        .then(response => response.json())
+        .then(jsonresponse => {
+            if ( !jsonresponse.admin ) {
+                console.log("REROUTING")
+                this.setState({
+                    admin: false
+                })
+            }
+        })
         this.getCategories();
         this.getDifficulties();
     }
@@ -167,6 +177,9 @@ class Admin extends Component {
     }
 
     render () {
+        if ( !this.state.admin ) {
+            return <Redirect to='/' />
+        }
         return (
             <Container>
                 <Row style={{"margin-bottom": "50px"}}>

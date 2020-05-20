@@ -5,6 +5,7 @@ import { Switch, Route } from 'react-router-dom'
 import { history } from '../store'
 import ProtectedRoute from '../containers/ProtectedRoute'
 import OidcCallback from '../containers/OidcCallback'
+import PropTypes from 'prop-types'
 import {
   Home,
   NavBar,
@@ -13,20 +14,22 @@ import {
 import { GET } from '../actions'
 
 class App extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
 
     this.state = {
-      admin: false,
+      admin: false
     }
   }
 
-  componentDidMount() {
-    let waitForOidc = setInterval(() => {
-      if ( this.props.oidc.user ) {
-        GET(this.props.oidc.user.access_token, "/user")
-        .then(response => response.json())
-        .then(jsonresponse => {this.setState({admin: jsonresponse.admin}); console.log(jsonresponse)})
+  componentDidMount = () => {
+    const waitForOidc = setInterval(() => {
+      if (this.props.oidc.user) {
+        GET(this.props.oidc.user.access_token, '/user')
+          .then(response => response.json())
+          .then(jsonresponse => this.setState({
+            admin: jsonresponse.admin
+          }))
         clearInterval(waitForOidc)
       }
     }, 100)
@@ -48,6 +51,12 @@ class App extends Component {
       </ConnectedRouter>
     )
   }
+}
+
+App.propTypes = {
+  oidc: PropTypes.shape({
+    user: PropTypes.any
+  })
 }
 
 export default App
