@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { CallbackComponent } from 'redux-oidc'
 import { push } from 'connected-react-router'
 import userManager from '../userManager'
-import InfoSpinner from '../components/InfoSpinner/index'
 
 class OidcCallback extends React.Component {
   constructor (props) {
@@ -29,7 +28,7 @@ class OidcCallback extends React.Component {
           console.error(error)
         }}
       >
-        <InfoSpinner>Signing you in, please wait...</InfoSpinner>
+        <></>
       </CallbackComponent>
     )
   }

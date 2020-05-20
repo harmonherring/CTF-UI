@@ -1,16 +1,43 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Container } from 'reactstrap';
-import Challenge from './Challenge';
-import styled from 'styled-components';
+import { Container } from 'reactstrap'
+import Challenge from './Challenge'
+import styled from 'styled-components'
+import { Loader } from '../'
+import { GET } from '../../actions'
 
 const StyledChallenge = styled(Challenge)`
   box-shadow 0 1px 4px rgba(0, 0, 0, 0.4);
 `;
 
 class Home extends Component {
-    render () {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      isLoading: true,
+      showLoader: false
+    }
+  }
+
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({
+        showLoader: true
+      })
+    }, 1000)
+    GET(this.props.oidc.user.access_token, '/user')
+    .then(response => response.json())
+    .then(jsonresponse => console.log(jsonresponse))
+    .then(() => this.setState({isLoading: false}))
+  }
+
+  render () {
+    if (this.state.isLoading) {
+      return <Loader loading={this.state.showLoader} />
+    }
+    else {
       return (
         <Container>
           <StyledChallenge 
@@ -22,9 +49,9 @@ class Home extends Component {
               flags={{1: {"point_value": 25, "flag": "abc"}, 2: {"point_value": 25}}} 
               tags={["Web", "Wordpress", "PHP"]} />
         </Container>
-        
       );
     }
+  }
 }
 
 Home.propTypes = {

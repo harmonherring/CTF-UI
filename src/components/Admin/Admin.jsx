@@ -6,6 +6,7 @@ import { FaRegTrashAlt } from 'react-icons/fa';
 import styled from 'styled-components';
 import { GET, POST, DELETE } from '../../actions';
 import { Redirect } from 'react-router';
+import { Loader } from '../'
 
 
 const StyledInput = styled(Input)`
@@ -53,7 +54,9 @@ class Admin extends Component {
             deletionModalBody: "",
             deletionModalFooter: "",
             categoryDeletionError: "",
-            admin: true
+            admin: true,
+            isLoading: true,
+            showLoader: false
         }
     }
 
@@ -65,6 +68,11 @@ class Admin extends Component {
     }
 
     componentDidMount () {
+        setTimeout(() => {
+            this.setState({
+                showLoader: true
+            })
+        }, 1000)
         GET(this.props.oidc.user.access_token, "/user")
         .then(response => response.json())
         .then(jsonresponse => {
@@ -75,8 +83,14 @@ class Admin extends Component {
                 })
             }
         })
-        this.getCategories();
-        this.getDifficulties();
+        this.getDataForRender()
+        .then(() => this.setState({
+            isLoading: false
+        }));
+    }
+
+    getDataForRender = () => {
+        return Promise.all([this.getCategories(), this.getDifficulties()])
     }
 
     getCategories = () => {
@@ -86,7 +100,7 @@ class Admin extends Component {
     }
 
     getDifficulties = () => {
-        GET(this.props.oidc.user.access_token, '/difficulties')
+        return GET(this.props.oidc.user.access_token, '/difficulties')
         .then(response => response.json())
         .then(jsonresponse => this.setState({difficulties: jsonresponse}));
     }
@@ -180,90 +194,95 @@ class Admin extends Component {
         if ( !this.state.admin ) {
             return <Redirect to='/' />
         }
-        return (
-            <Container>
-                <Row style={{"margin-bottom": "50px"}}>
-                    <Col sm="5">
-                        <h1>Categories</h1>
-                        <hr />
-                        { this.state.categoryDeletionError ? <Alert color="danger">{this.state.categoryDeletionError}</Alert> : "" }
-                        <ListGroup style={{"margin-bottom": "20px"}}>
-                            {
-                                this.state.categories.map(category => 
-                                    <>
-                                        <StyledListItem key={category.name} id={category.name + "-popover"} onMouseEnter={() => this.setState({[category.name + "-popover"]: true})} onMouseLeave={() => this.setState({[category.name + "-popover"]: false})} >
-                                            <h5 style={{"margin": 0}}><span className="float-left">{this.capitalize(category.name)}</span> <span className="float-right"><StyledTrash size={18} onClick={() => this.deleteCategory(category.name)} /> <Badge pill color="primary">{category.count}</Badge></span></h5>
-                                        </StyledListItem>
-                                        <Popover placement="right" isOpen={this.state[category.name + "-popover"]} target={category.name + "-popover"}>
-                                            <PopoverHeader>
-                                                {this.capitalize(category.name)}
-                                            </PopoverHeader>
-                                            <PopoverBody>
-                                                {category.description}
-                                            </PopoverBody>
-                                        </Popover>
-                                    </>
-                                )
-                            }
-                        </ListGroup>
-                        <Modal isOpen={this.state.categoryModal} toggle={() => this.toggleModal("categoryModal")} backdrop={this.state.backdrop}>
-                            <ModalHeader toggle={() => this.toggleModal("categoryModal")}>
-                                Create Category
-                            </ModalHeader>
-                            <ModalBody>
-                                <Label for="new_category_name" style={{"margin-bottom": 0}}>Category Name</Label>
-                                <StyledInput id="new_category_name" placeholder="Food" onChange={(e) => this.updateStateObject(e, "new_category", "name")} value={this.state.new_category.name} />
-                                <br />
-                                <Label for="new_category_description">Category Name</Label>
-                                <Input style={{"height": "150px"}} type="textarea" id="new_category_description" placeholder="Eat a whole cake" onChange={(e) => this.updateStateObject(e, "new_category", "description")} value={this.state.new_category.description}></Input>
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button color="primary" onClick={() => this.createCategory()}>Create Category</Button>
-                            </ModalFooter>
-                        </Modal>
-                        <Button style={{"width": "100%", "margin-bottom": "20px"}} color="primary" onClick={() => this.toggleModal("categoryModal")}>Create Category</Button>
-                    </Col>
-
-                    <Col sm={{size: 5, offset: 2}}>
-                        <h1>Difficulties</h1>
-                        <hr />
-                        { this.state.difficultyDeletionError ? <Alert color="danger">{this.state.difficultyDeletionError}</Alert> : "" }
-                        <ListGroup style={{"margin-bottom": "20px"}}>
-                            {
-                                this.state.difficulties.map(difficulty => 
-                                    <StyledListItem key={difficulty.name}>
-                                        <h5 style={{"margin": 0}}><span className="float-left">{this.capitalize(difficulty.name)}</span><span className="float-right"><StyledTrash size={18} onClick={() => this.deleteDifficulty(difficulty.name)} /> <Badge pill color="primary">{difficulty.count}</Badge></span></h5>
-                                    </StyledListItem>
-                                )
-                            }
-                        </ListGroup>
-                        <Modal isOpen={this.state.difficultyModal} toggle={() => this.toggleModal("difficultyModal")} backdrop={this.state.backdrop}>
-                            <ModalHeader toggle={() => this.toggleModal("difficultyModal")}>
-                                Create Difficulty
-                            </ModalHeader>
-                            <ModalBody>
+        else if (this.state.isLoading) {
+            return <Loader loading={this.state.showLoader} />
+        }
+        else {
+            return (
+                <Container>
+                    <Row style={{"margin-bottom": "50px"}}>
+                        <Col sm="5">
+                            <h1>Categories</h1>
+                            <hr />
+                            { this.state.categoryDeletionError ? <Alert color="danger">{this.state.categoryDeletionError}</Alert> : "" }
+                            <ListGroup style={{"margin-bottom": "20px"}}>
                                 {
-                                    this.state.error ? <Alert color="danger">{this.state.error}</Alert> : <span></span>
+                                    this.state.categories.map(category => 
+                                        <>
+                                            <StyledListItem key={category.name} id={category.name + "-popover"} onMouseEnter={() => this.setState({[category.name + "-popover"]: true})} onMouseLeave={() => this.setState({[category.name + "-popover"]: false})} >
+                                                <h5 style={{"margin": 0}}><span className="float-left">{this.capitalize(category.name)}</span> <span className="float-right"><StyledTrash size={18} onClick={() => this.deleteCategory(category.name)} /> <Badge pill color="primary">{category.count}</Badge></span></h5>
+                                            </StyledListItem>
+                                            <Popover placement="right" isOpen={this.state[category.name + "-popover"]} target={category.name + "-popover"}>
+                                                <PopoverHeader>
+                                                    {this.capitalize(category.name)}
+                                                </PopoverHeader>
+                                                <PopoverBody>
+                                                    {category.description}
+                                                </PopoverBody>
+                                            </Popover>
+                                        </>
+                                    )
                                 }
-                                <Label for="new_difficulty_name">Difficulty Name</Label>
-                                <StyledInput id="new_difficulty_name" placeholder="Easy Peasy" onChange={(e) => this.updateStateObject(e, "new_difficulty", "name")} value={this.state.new_difficulty.name} />
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button color="primary" onClick={() => this.createDifficulty()}>Create Difficulty</Button>
-                            </ModalFooter>
-                        </Modal>
-                        <Button style={{"width": "100%", "margin-bottom": "20px"}} color="primary" onClick={() => this.toggleModal("difficultyModal")}>Create Difficulty</Button>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <h1>Active Reports</h1>
-                        <hr />
-                        <p>To be implemented at a future date</p>
-                    </Col>
-                </Row>
-            </Container>
-        );
+                            </ListGroup>
+                            <Modal isOpen={this.state.categoryModal} toggle={() => this.toggleModal("categoryModal")} backdrop={this.state.backdrop}>
+                                <ModalHeader toggle={() => this.toggleModal("categoryModal")}>
+                                    Create Category
+                                </ModalHeader>
+                                <ModalBody>
+                                    <Label for="new_category_name" style={{"margin-bottom": 0}}>Category Name</Label>
+                                    <StyledInput id="new_category_name" placeholder="Food" onChange={(e) => this.updateStateObject(e, "new_category", "name")} value={this.state.new_category.name} />
+                                    <br />
+                                    <Label for="new_category_description">Category Name</Label>
+                                    <Input style={{"height": "150px"}} type="textarea" id="new_category_description" placeholder="Eat a whole cake" onChange={(e) => this.updateStateObject(e, "new_category", "description")} value={this.state.new_category.description}></Input>
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="primary" onClick={() => this.createCategory()}>Create Category</Button>
+                                </ModalFooter>
+                            </Modal>
+                            <Button style={{"width": "100%", "margin-bottom": "20px"}} color="primary" onClick={() => this.toggleModal("categoryModal")}>Create Category</Button>
+                        </Col>
+    
+                        <Col sm={{size: 5, offset: 2}}>
+                            <h1>Difficulties</h1>
+                            <hr />
+                            { this.state.difficultyDeletionError ? <Alert color="danger">{this.state.difficultyDeletionError}</Alert> : "" }
+                            <ListGroup style={{"margin-bottom": "20px"}}>
+                                {
+                                    this.state.difficulties.map(difficulty => 
+                                        <StyledListItem key={difficulty.name}>
+                                            <h5 style={{"margin": 0}}><span className="float-left">{this.capitalize(difficulty.name)}</span><span className="float-right"><StyledTrash size={18} onClick={() => this.deleteDifficulty(difficulty.name)} /> <Badge pill color="primary">{difficulty.count}</Badge></span></h5>
+                                        </StyledListItem>
+                                    )
+                                }
+                            </ListGroup>
+                            <Modal isOpen={this.state.difficultyModal} toggle={() => this.toggleModal("difficultyModal")} backdrop={this.state.backdrop}>
+                                <ModalHeader toggle={() => this.toggleModal("difficultyModal")}>
+                                    Create Difficulty
+                                </ModalHeader>
+                                <ModalBody>
+                                    {
+                                        this.state.error ? <Alert color="danger">{this.state.error}</Alert> : <span></span>
+                                    }
+                                    <Label for="new_difficulty_name">Difficulty Name</Label>
+                                    <StyledInput id="new_difficulty_name" placeholder="Easy Peasy" onChange={(e) => this.updateStateObject(e, "new_difficulty", "name")} value={this.state.new_difficulty.name} />
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="primary" onClick={() => this.createDifficulty()}>Create Difficulty</Button>
+                                </ModalFooter>
+                            </Modal>
+                            <Button style={{"width": "100%", "margin-bottom": "20px"}} color="primary" onClick={() => this.toggleModal("difficultyModal")}>Create Difficulty</Button>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <h1>Active Reports</h1>
+                            <hr />
+                            <p>To be implemented at a future date</p>
+                        </Col>
+                    </Row>
+                </Container>
+            );
+        }
     }
 }
 
