@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Route } from 'react-router-dom'
 import userManager from '../userManager'
-import InfoSpinner from '../components/InfoSpinner/index'
 
 const ProtectedRoute = ({ component: Component, user, ...args }) => (
   <Route {...args} render={(props) => {
@@ -11,7 +10,7 @@ const ProtectedRoute = ({ component: Component, user, ...args }) => (
       // User is not logged in or their access token has expired
       userManager.signinRedirect()
       return (
-        <InfoSpinner>Signing you in, please wait...</InfoSpinner>
+        <></>
       )
     }
 
