@@ -17,7 +17,7 @@ COPY . .
 
 RUN yarn build
 
-FROM nginx:1.17.10
+FROM nginx:1.17.10-alpine
 COPY --from=build /usr/src/ctf-ui/build /usr/share/nginx/html
 RUN chgrp -R root /var/cache/nginx /var/run /var/log/nginx && \
     chmod -R 770 /var/cache/nginx /var/run /var/log/nginx
