@@ -47,7 +47,7 @@ class Challenge extends Component {
 
     render = () => {
         return(
-            <ChallengeContainer>
+            <ChallengeContainer style={{"marginTop": "20px"}}>
                 <ChallengeBody>
                     <Row>
                          <Col>

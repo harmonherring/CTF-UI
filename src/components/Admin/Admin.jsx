@@ -94,7 +94,7 @@ class Admin extends Component {
     }
 
     getCategories = () => {
-        GET(this.props.oidc.user.access_token, '/categories')
+        return GET(this.props.oidc.user.access_token, '/categories')
         .then(response => response.json())
         .then(jsonresponse => this.setState({categories: jsonresponse}));
     }
