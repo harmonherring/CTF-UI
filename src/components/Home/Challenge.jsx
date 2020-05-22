@@ -1,12 +1,31 @@
-import React, {Component} from 'react';
-import styled from 'styled-components';
-import { Badge, Row, Col } from 'reactstrap';
-import { FaFlag } from 'react-icons/fa';
+import React, {Component} from 'react'
+import styled from 'styled-components'
+import { connect } from 'react-redux'
+import { Badge, Row, Col } from 'reactstrap'
+import { FaFlag, FaRegTrashAlt } from 'react-icons/fa'
+import { DELETE } from '../../actions'
+
+const StyledTrash = styled(FaRegTrashAlt)`
+    color: #E51C23;
+    visibility: hidden;
+    opacity: 0.5;
+    transition: opacity .2s;
+    margin-bottom: 5px;
+    
+    &:hover {
+        cursor: pointer;
+        opacity: 1;
+    }
+`;
 
 const ChallengeContainer = styled.div`
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
     background-color: #fff;
     border-radius: .25rem;
+
+    &:hover ${StyledTrash} {
+        visibility: visible;
+    }
 `;
 
 const ChallengeBody = styled.div`
@@ -32,6 +51,8 @@ class Challenge extends Component {
     constructor(props) {
         super(props);
 
+        console.log(props)
+
         let count = 0
         for (const key of Object.keys(this.props.flags)) {
             if ("flag" in this.props.flags[key]) {
@@ -45,6 +66,18 @@ class Challenge extends Component {
         }
     }
 
+    deleteChallenge = () => {
+        DELETE(this.props.oidc.user.access_token, "/challenges/" + this.props.id)
+        .then(response => Promise.all([response.status, response.json()]))
+        .then(response => {
+            if (response[0] === 200) {
+                this.props.reloadChallenges()
+            } else {
+                this.props.setError("Unable to delete challenge")
+            }
+        })
+    }
+
     render = () => {
         return(
             <ChallengeContainer style={{"marginTop": "20px"}}>
@@ -54,7 +87,13 @@ class Challenge extends Component {
                             <h1 style={{"display": "inline-block"}}><a href={window.location.href} style={{"textDecoration": "none"}}>{this.props.title}</a></h1>
                         </Col>
                          <Col>
-                            <h2 className="float-right" style={{"color": "#4CAF50"}}>{this.state.completedFlags}/{Object.keys(this.props.flags).length} <FaFlag /></h2>
+                            <h2 className="float-right">
+                                {
+                                    (this.props.admin || this.props.submitter_username === this.props.current_username) && <StyledTrash onClick={() => this.deleteChallenge()} />
+                                }
+                                &nbsp; 
+                                <span style={{"color": "#4CAF50"}}>{this.state.completedFlags}/{Object.keys(this.props.flags).length} <FaFlag style={{"marginBottom": "5px"}} /></span>
+                            </h2>
                         </Col>
                     </Row>
                     <Row>
@@ -77,4 +116,11 @@ class Challenge extends Component {
     }
 }
 
-export default Challenge
+const mapStateToProps = (state) => ({
+    oidc: state.oidc
+  })
+
+export default connect(
+    mapStateToProps
+)
+(Challenge)

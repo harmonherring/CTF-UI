@@ -71,7 +71,8 @@ class Home extends Component {
       sort_by: "",
       dropdownOpen: false,
       categories: {},
-      difficulties: {}
+      difficulties: {},
+      error: ""
     }
   }
 
@@ -88,6 +89,7 @@ class Home extends Component {
 
     this.getCategories()
     .then(() => this.getDifficulties())
+    .then(() => this.getUserInfo())
     .then(() => this.getChallenges())
     .then(() => this.setState({
       isLoading: false
@@ -173,6 +175,20 @@ class Home extends Component {
     return difficulties.join()
   }
 
+  getUserInfo = () => {
+    GET(this.props.oidc.user.access_token, "/user")
+    .then(response => response.json())
+    .then(jsonresponse => this.setState({
+      userinfo: jsonresponse
+    }))
+  }
+
+  setError = (message) => {
+    this.setState({
+      error: message
+    })
+  }
+
   render () {
     if (this.state.isLoading) {
       return <Loader loading={this.state.showLoader} />
@@ -244,6 +260,7 @@ class Home extends Component {
               <Row>
                 <Col>
                   <StyledChallenge 
+                    id={challenge.id}
                     title={challenge.title}
                     description={challenge.description}
                     submitter_username={challenge.submitter}
@@ -251,6 +268,10 @@ class Home extends Component {
                     ts="May 21, 2020"
                     flags={challenge.flags}
                     tags={challenge.tags}
+                    reloadChallenges={this.getChallenges}
+                    setError={this.setError}
+                    current_username={this.state.userinfo.preferred_username}
+                    admin={this.state.userinfo.admin}
                   />
                 </Col>
               </Row>
