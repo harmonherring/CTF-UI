@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Container, Row, Col, Input, UncontrolledButtonDropdown, DropdownItem, DropdownToggle, DropdownMenu, Label, Button } from 'reactstrap'
+import { Container, Row, Col, Input, UncontrolledButtonDropdown, DropdownItem, DropdownToggle, DropdownMenu, Label, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 import Challenge from './Challenge'
 import styled from 'styled-components'
 import { Loader } from '../'
-import { GET } from '../../actions'
+import { GET, DELETE } from '../../actions'
 import { FaRegEdit } from 'react-icons/fa';
 
 const StyledChallenge = styled(Challenge)`
@@ -72,7 +72,8 @@ class Home extends Component {
       dropdownOpen: false,
       categories: {},
       difficulties: {},
-      error: ""
+      error: "",
+      deletionModal: false
     }
   }
 
@@ -189,6 +190,43 @@ class Home extends Component {
     })
   }
 
+  spawnDeleteModal = (challenge_id) => {
+
+  }
+
+  toggleModal = (modal) => {
+    this.setState({
+      [modal]: !this.state[modal]
+    })
+  }
+
+  toggleDeleteModal = (id, title) => {
+    this.setState({
+      deleteChallengeId: id,
+      deleteChallengeTitle: title
+    })
+    this.toggleModal("deletionModal")
+  }
+
+  deleteChallenge = (challenge_id) => {
+    DELETE(this.props.oidc.user.access_token, "/challenges/" + challenge_id)
+    .then(response => Promise.all([response.status, response.json()]))
+    .then(response => {
+        if (response[0] === 200) {
+            this.getChallenges()
+        } else {
+            this.setError("Unable to delete challenge")
+        }
+    })
+    .then(() => {
+      if (this.state.deletionModal) {
+        this.setState({
+          deletionModal: false
+        })
+      }
+    })
+}
+
   render () {
     if (this.state.isLoading) {
       return <Loader loading={this.state.showLoader} />
@@ -268,8 +306,7 @@ class Home extends Component {
                     ts="May 21, 2020"
                     flags={challenge.flags}
                     tags={challenge.tags}
-                    reloadChallenges={this.getChallenges}
-                    setError={this.setError}
+                    deleteChallenge={this.toggleDeleteModal}
                     current_username={this.state.userinfo.preferred_username}
                     admin={this.state.userinfo.admin}
                   />
@@ -277,8 +314,17 @@ class Home extends Component {
               </Row>
             )
           }
+          <Modal isOpen={this.state.deletionModal} toggle={() => this.toggleModal("deletionModal")}>
+          <ModalHeader toggle={() => this.toggleModal("deletionModal")}>Confirm Deletion</ModalHeader>
+          <ModalBody>
+            Confirm deletion of Challenge {this.state.deleteChallengeTitle}
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={() => this.deleteChallenge(this.state.deleteChallengeId)}>Delete</Button>
+            <Button color="secondary" onClick={() => this.toggleModal("deletionModal")}>Cancel</Button>
+          </ModalFooter>
+        </Modal>
         </Container>
-
       );
     }
   }

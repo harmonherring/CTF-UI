@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { Badge, Row, Col } from 'reactstrap'
 import { FaFlag, FaRegTrashAlt } from 'react-icons/fa'
-import { DELETE } from '../../actions'
 
 const StyledTrash = styled(FaRegTrashAlt)`
     color: #E51C23;
@@ -66,18 +65,6 @@ class Challenge extends Component {
         }
     }
 
-    deleteChallenge = () => {
-        DELETE(this.props.oidc.user.access_token, "/challenges/" + this.props.id)
-        .then(response => Promise.all([response.status, response.json()]))
-        .then(response => {
-            if (response[0] === 200) {
-                this.props.reloadChallenges()
-            } else {
-                this.props.setError("Unable to delete challenge")
-            }
-        })
-    }
-
     render = () => {
         return(
             <ChallengeContainer style={{"marginTop": "20px"}}>
@@ -89,7 +76,7 @@ class Challenge extends Component {
                          <Col>
                             <h2 className="float-right">
                                 {
-                                    (this.props.admin || this.props.submitter_username === this.props.current_username) && <StyledTrash onClick={() => this.deleteChallenge()} />
+                                    (this.props.admin || this.props.submitter_username === this.props.current_username) && <StyledTrash onClick={() => this.props.deleteChallenge(this.props.id, this.props.title)} />
                                 }
                                 &nbsp; 
                                 <span style={{"color": "#4CAF50"}}>{this.state.completedFlags}/{Object.keys(this.props.flags).length} <FaFlag style={{"marginBottom": "5px"}} /></span>
