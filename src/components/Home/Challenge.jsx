@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { Badge, Row, Col } from 'reactstrap'
 import { FaFlag, FaRegTrashAlt } from 'react-icons/fa'
+import { capitalize } from '../../utils'
 
 const StyledTrash = styled(FaRegTrashAlt)`
     color: #E51C23;
@@ -50,11 +51,9 @@ class Challenge extends Component {
     constructor(props) {
         super(props);
 
-        console.log(props)
-
         let count = 0
-        for (const key of Object.keys(this.props.flags)) {
-            if ("flag" in this.props.flags[key]) {
+        for (const data of Object.values(this.props.flags)) {
+            if ("flag" in data) {
                 count++;
             }
         }
@@ -71,7 +70,15 @@ class Challenge extends Component {
                 <ChallengeBody>
                     <Row>
                          <Col>
-                            <h1 style={{"display": "inline-block"}}><a href={window.location.href} style={{"textDecoration": "none"}}>{this.props.title}</a></h1>
+                            <h1 style={{"display": "block", "marginBottom": "0"}}><a href={window.location.href + "challenge/" + this.props.id} style={{"textDecoration": "none"}}>{this.props.title}</a></h1>
+                            <BadgeWrapper><Badge color="primary">{capitalize(this.props.difficulty)}</Badge></BadgeWrapper>
+                            <BadgeWrapper><Badge color="primary">{capitalize(this.props.category)}</Badge></BadgeWrapper>
+                            <br />
+                            {
+                                this.props.tags.map((tag) => 
+                                    <BadgeWrapper key={tag}><Badge key={tag} color="secondary">{tag}</Badge></BadgeWrapper>
+                                )
+                            }
                         </Col>
                          <Col>
                             <h2 className="float-right">
@@ -81,15 +88,6 @@ class Challenge extends Component {
                                 &nbsp; 
                                 <span style={{"color": "#4CAF50"}}>{this.state.completedFlags}/{Object.keys(this.props.flags).length} <FaFlag style={{"marginBottom": "5px"}} /></span>
                             </h2>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                        {
-                            this.props.tags.map((tag) => 
-                                <BadgeWrapper key={tag}><Badge key={tag} color="secondary">{tag}</Badge></BadgeWrapper>
-                            )
-                        }
                         </Col>
                     </Row>
                     <hr />

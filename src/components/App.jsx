@@ -9,7 +9,8 @@ import PropTypes from 'prop-types'
 import {
   Home,
   NavBar,
-  Admin
+  Admin,
+  Challenge
 } from './index'
 import { GET } from '../actions'
 
@@ -45,6 +46,7 @@ class App extends Component {
               <Route exact path="/callback" component={OidcCallback}/>
               <ProtectedRoute exact path="/" component={Home}/>
               <ProtectedRoute exact path="/admin" component={Admin} />
+              <ProtectedRoute exact path="/challenge/:challenge_id" component={Challenge} />
             </Switch>
           </Container>
         </Container>

@@ -6,7 +6,8 @@ import Challenge from './Challenge'
 import styled from 'styled-components'
 import { Loader } from '../'
 import { GET, DELETE } from '../../actions'
-import { FaRegEdit } from 'react-icons/fa';
+import { FaRegEdit } from 'react-icons/fa'
+import { capitalize } from '../../utils'
 
 const StyledChallenge = styled(Challenge)`
   box-shadow 0 1px 4px rgba(0, 0, 0, 0.4);
@@ -143,10 +144,6 @@ class Home extends Component {
     })
   }
 
-  capitalize = (str) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
   toggleCheck = (categoriesOrDifficulties, name) => {
     let val = this.state[categoriesOrDifficulties][name]
     val.checked = !val.checked
@@ -262,7 +259,7 @@ class Home extends Component {
                           <DropdownItem toggle={false}>
                             <Label check>
                               <Input type="checkbox" checked={this.state.categories[name].checked} onChange={() => this.toggleCheck("categories", name)} />{' '}
-                              {this.capitalize(name)}
+                              {capitalize(name)}
                             </Label>
                           </DropdownItem>
                         )
@@ -279,7 +276,7 @@ class Home extends Component {
                           <DropdownItem toggle={false}>
                             <Label check>
                               <Input type="checkbox" checked={this.state.difficulties[name].checked} onChange={() => this.toggleCheck("difficulties", name)} />{' '}
-                              {this.capitalize(name)}
+                              {capitalize(name)}
                             </Label>
                           </DropdownItem>
                         )
@@ -309,6 +306,8 @@ class Home extends Component {
                     deleteChallenge={this.toggleDeleteModal}
                     current_username={this.state.userinfo.preferred_username}
                     admin={this.state.userinfo.admin}
+                    category={challenge.category}
+                    difficulty={challenge.difficulty}
                   />
                 </Col>
               </Row>
