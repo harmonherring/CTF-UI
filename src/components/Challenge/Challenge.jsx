@@ -1,5 +1,5 @@
 import React from 'react'
-import { Alert, Container, Row, Col, Card, CardHeader, CardBody, Button, Table, InputGroup, InputGroupAddon, Input, InputGroupText, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label } from 'reactstrap'
+import { Alert, Badge, Container, Row, Col, Card, CardHeader, CardBody, Button, Table, InputGroup, InputGroupAddon, Input, InputGroupText, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label } from 'reactstrap'
 import { connect } from 'react-redux'
 import Loader from '../Loader'
 import { GET, POST, DELETE } from '../../actions'
@@ -7,6 +7,7 @@ import { FaRegArrowAltCircleDown as Download, FaFlag, FaTimes, FaCheck, FaRegTra
 import { GoPlus } from 'react-icons/go'
 import styled from 'styled-components'
 import BounceLoader from 'react-spinners/BounceLoader'
+import { capitalize } from '../../utils'
 
 const SpacedRow = styled(Row)`
     margin-bottom: 20px;
@@ -53,10 +54,12 @@ class Challenge extends React.Component {
     constructor(props) {
         super(props)
 
+        const { challenge_id } = this.props.match.params
+
         this.state = {
             is_loading: true,
             show_loader: false,
-            challenge_id: null,
+            challenge_id: challenge_id,
             data: {},
             completed_flags: 0,
             flag_attempt: "",
@@ -67,7 +70,9 @@ class Challenge extends React.Component {
             userinfo: {},
             new_flag: {},
             flag_error: "",
-            new_hint: {}
+            new_hint: {},
+            new_tag: "",
+            tag_error: ""
         }
     }
 
@@ -76,13 +81,9 @@ class Challenge extends React.Component {
             this.setState({
                 show_loader: true
             })
-        }, 5000)
+        }, 1000)
 
-        const { challenge_id } = this.props.match.params
-        this.setState({
-            challenge_id: challenge_id
-        })
-        this.getChallenge(challenge_id)
+        this.getChallenge(this.state.challenge_id)
         .then(() => this.getUserInfo())
         .then(() => this.setState({
             is_loading: false
@@ -276,6 +277,35 @@ class Challenge extends React.Component {
         })
     }
 
+    getTags = () => {
+        return GET(this.props.oidc.user.access_token, "/challenges/" + this.state.challenge_id + "/tags")
+        .then(response => response.json())
+        .then(tags => this.setState({
+            data: {
+                ...this.state.data,
+                tags: tags
+            }
+        }))
+    }
+
+    createTag = () => {
+        this.setState({
+            tag_error: ""
+        })
+        POST(this.props.oidc.user.access_token, "/challenges/" + this.state.challenge_id + "/tags/" + this.state.new_tag, {})
+        .then(response => Promise.all([response.status, response.json()]))
+        .then(response => {
+            if (response[0] === 201) {
+                this.getTags()
+                .then(() => this.closeModal())
+            } else {
+                this.setState({
+                    tag_error: response[1].message
+                })
+            }
+        })
+    }
+
     getUserInfo = () => {
         GET(this.props.oidc.user.access_token, "/user")
         .then(response => response.json())
@@ -294,6 +324,32 @@ class Challenge extends React.Component {
                     <SpacedRow>
                         <Col lg="9">
                             <h1 style={{"marginBottom": "0"}}><a style={{"textDecoration": "none"}} href={window.location.href}>{this.state.data.title}</a></h1>
+                            <Badge style={{"margin": "2px", "fontSize": "12px"}} color="primary">{capitalize(this.state.data.difficulty)}</Badge>
+                            <Badge style={{"margin": "2px", "fontSize": "12px"}} color="primary">{capitalize(this.state.data.category)}</Badge>
+                            <br />
+                            {
+                                this.state.data.tags.map(tag => 
+                                    <Badge key={tag} style={{"margin": "2px", "fontSize": "12px"}} color="secondary">{tag}</Badge>  
+                                )
+                            }
+                            {
+                                this.state.data.submitter === this.state.userinfo.preferred_username || this.state.userinfo.admin ? <StyledPlus color="#4CAF50" size={22} onClick={() => this.showModal("create_tag")} /> : <></>
+                            }
+                            <Modal isOpen={this.state.show_modal === "create_tag"} toggle={this.closeModal}>
+                                <ModalHeader toggle={this.closeModal}>
+                                    Create Tag
+                                </ModalHeader>
+                                <ModalBody>
+                                    {this.state.tag_error ? <Alert color="danger">{this.state.tag_error}</Alert> : <></>}
+                                    <FormGroup>
+                                        <Label styled={{"marginBottom": "0"}} for="tag">Tag</Label>
+                                        <Input style={{"height": "calc(1.2em + 1rem + 2px"}} id="tag" placeholder="Web" onChange={this.modifyState("new_tag")} value={this.state.new_tag} />
+                                    </FormGroup>
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="primary" className="float-right" onClick={() => this.createTag()}>Create Tag</Button>
+                                </ModalFooter>
+                            </Modal>
                         </Col>
                         <Col lg="3">
                             <Button color="primary" className="float-lg-right"><Download size={18} style={{"marginBottom": "1px"}} /> Download</Button>
