@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Badge, Row, Col } from 'reactstrap'
 import { FaFlag, FaRegTrashAlt } from 'react-icons/fa'
 import { capitalize } from '../../utils'
+import ReactMarkdown from 'react-markdown'
 
 const StyledTrash = styled(FaRegTrashAlt)`
     color: #E51C23;
@@ -85,7 +86,7 @@ class Challenge extends Component {
                         </Col>
                     </Row>
                     <hr />
-                    <p>{this.props.description}</p>
+                    <ReactMarkdown source={this.props.description} escapeHtml={true} />
                 </ChallengeBody>
                 <ChallengeFooter>
                     Submitted by <a href={window.location.href}>{this.props.submitter_username}</a> on {this.props.ts}

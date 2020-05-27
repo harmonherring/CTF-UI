@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { capitalize } from '../../utils'
 import { connect } from 'react-redux'
 import { POST } from '../../actions'
+import ReactMarkdown from 'react-markdown'
 import {
     Col,
     Badge,
@@ -161,10 +162,18 @@ class CreateChallengeModal extends React.Component {
                             </Col>
                         </Row>
                     </FormGroup>
-                    <FormGroup>
-                        <StyledLabel for="description">Description</StyledLabel>
-                        <Input type="textarea" rows={6} id="description" placeholder="Description of my awesome challenge" onChange={this.modifyStateObject("new_challenge", "description")} value={this.state.new_challenge.description} />
-                    </FormGroup>
+                    <Row>
+                        <Col lg="6">
+                            <FormGroup>
+                                <Label for="description">Description</Label>
+                                <Input type="textarea" rows={10} id="description" placeholder="Description of my awesome challenge" onChange={this.modifyStateObject("new_challenge", "description")} value={this.state.new_challenge.description} />
+                            </FormGroup>
+                        </Col>
+                        <Col lg="6">
+                            <ReactMarkdown source={this.state.new_challenge.description} escapeHtml={true} />
+                        </Col>
+                    </Row>
+                    
                     <FormGroup>
                         <StyledLabel for="tag">Tags</StyledLabel>
                         <StyledInput style={{"marginBottom": "8px"}} id="tag" onChange={this.modifyState("new_tag")} onKeyPress={this.checkSubmit} placeholder="Web" value={this.state.new_tag} />
