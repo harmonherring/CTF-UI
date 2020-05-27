@@ -48,20 +48,14 @@ const BadgeWrapper = styled.h5`
 `;
 
 class Challenge extends Component {
-    constructor(props) {
-        super(props);
-
+    getCompletedFlags = () => {
         let count = 0
         for (const data of Object.values(this.props.flags)) {
             if ("flag" in data) {
                 count++;
             }
         }
-
-        this.state = {
-            completedFlags: count,
-
-        }
+        return count
     }
 
     render = () => {
@@ -86,7 +80,7 @@ class Challenge extends Component {
                                     (this.props.admin || this.props.submitter_username === this.props.current_username) && <StyledTrash onClick={() => this.props.deleteChallenge(this.props.id, this.props.title)} />
                                 }
                                 &nbsp; 
-                                <span style={{"color": "#4CAF50"}}>{this.state.completedFlags}/{Object.keys(this.props.flags).length} <FaFlag style={{"marginBottom": "5px"}} /></span>
+                                <span style={{"color": "#4CAF50"}}>{this.getCompletedFlags()}/{Object.keys(this.props.flags).length} <FaFlag style={{"marginBottom": "5px"}} /></span>
                             </h2>
                         </Col>
                     </Row>

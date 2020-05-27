@@ -8,6 +8,7 @@ import { Loader } from '../'
 import { GET, DELETE } from '../../actions'
 import { FaRegEdit } from 'react-icons/fa'
 import { capitalize } from '../../utils'
+import CreateChallengeModal from './CreateChallengeModal'
 
 const StyledChallenge = styled(Challenge)`
     box-shadow 0 1px 4px rgba(0, 0, 0, 0.4);
@@ -74,12 +75,12 @@ class Home extends Component {
             categories: {},
             difficulties: {},
             error: "",
-            deletionModal: false
+            deletionModal: false,
+            new_challenge: {
+                tags: []
+            },
+            show_modal: ""
         }
-    }
-
-    toggle = () => {
-        this.setState({dropdownOpen: !this.state.dropdownOpen})
     }
 
     componentDidMount() {
@@ -96,6 +97,18 @@ class Home extends Component {
         .then(() => this.setState({
             isLoading: false
         }))
+    }
+
+    showModal = (modal) => {
+        this.setState({
+            show_modal: modal
+        })
+    }
+
+    closeModal = () => {
+        this.setState({
+            show_modal: ""
+        })
     }
 
     getDataForRender = (data) => {
@@ -187,22 +200,12 @@ class Home extends Component {
         })
     }
 
-    spawnDeleteModal = (challenge_id) => {
-
-    }
-
-    toggleModal = (modal) => {
-        this.setState({
-            [modal]: !this.state[modal]
-        })
-    }
-
     toggleDeleteModal = (id, title) => {
         this.setState({
             deleteChallengeId: id,
             deleteChallengeTitle: title
         })
-        this.toggleModal("deletionModal")
+        this.showModal("deletion_modal")
     }
 
     deleteChallenge = (challenge_id) => {
@@ -216,13 +219,13 @@ class Home extends Component {
                 }
         })
         .then(() => {
-            if (this.state.deletionModal) {
+            if (this.state.show_modal) {
                 this.setState({
-                    deletionModal: false
+                    show_modal: ""
                 })
             }
         })
-}
+    }
 
     render () {
         if (this.state.isLoading) {
@@ -231,6 +234,14 @@ class Home extends Component {
         else {
             return (
                 <Container style={{"marginBottom": "40px"}}>
+                    <CreateChallengeModal 
+                        isOpen={this.state.show_modal === "create_challenge"}
+                        toggle={this.closeModal} 
+                        categories={this.state.categories} 
+                        difficulties={this.state.difficulties}
+                        current_username={this.state.userinfo.preferred_username}
+                        successCallback={() => {this.getChallenges().then(() => this.closeModal())}}
+                    />
                     <Row>
                         <Col lg={{ size: 4, order: 2}} style={{"margin-bottom": "12px"}}>
                             <StyledInput placeholder="Search" />
@@ -286,8 +297,8 @@ class Home extends Component {
                                 </LgCentered>
                             </Row>
                         </Col>
-                        <Col lg={{ size: 4, order: 3}} style={{"margin-bottom": "12px"}}>
-                            <UploadButton color="primary" size="lg" className="float-lg-right">Create <FaRegEdit style={{"marginBottom": "5px"}} size={20} /></UploadButton>
+                        <Col lg={{ size: 4, order: 3}} style={{"marginBottom": "12px"}}>
+                            <UploadButton onClick={() => this.showModal("create_challenge")} color="primary" size="lg" className="float-lg-right">Create <FaRegEdit style={{"marginBottom": "5px"}} size={20} /></UploadButton>
                         </Col>
                     </Row>
                     {
@@ -313,14 +324,14 @@ class Home extends Component {
                             </Row>
                         )
                     }
-                    <Modal isOpen={this.state.deletionModal} toggle={() => this.toggleModal("deletionModal")}>
-                    <ModalHeader toggle={() => this.toggleModal("deletionModal")}>Confirm Deletion</ModalHeader>
+                    <Modal isOpen={this.state.show_modal === "deletion_modal"} toggle={this.closeModal}>
+                    <ModalHeader toggle={this.closeModal}>Confirm Deletion</ModalHeader>
                     <ModalBody>
                         Confirm deletion of Challenge {this.state.deleteChallengeTitle}
                     </ModalBody>
                     <ModalFooter>
                         <Button color="primary" onClick={() => this.deleteChallenge(this.state.deleteChallengeId)}>Delete</Button>
-                        <Button color="secondary" onClick={() => this.toggleModal("deletionModal")}>Cancel</Button>
+                        <Button color="secondary" onClick={this.closeModal}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
                 </Container>

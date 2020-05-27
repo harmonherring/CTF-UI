@@ -342,7 +342,7 @@ class Challenge extends React.Component {
                                 <ModalBody>
                                     {this.state.tag_error ? <Alert color="danger">{this.state.tag_error}</Alert> : <></>}
                                     <FormGroup>
-                                        <Label styled={{"marginBottom": "0"}} for="tag">Tag</Label>
+                                        <Label style={{"marginBottom": "0"}} for="tag">Tag</Label>
                                         <Input style={{"height": "calc(1.2em + 1rem + 2px"}} id="tag" placeholder="Web" onChange={this.modifyState("new_tag")} value={this.state.new_tag} />
                                     </FormGroup>
                                 </ModalBody>
