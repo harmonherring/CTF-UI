@@ -77,7 +77,6 @@ class Admin extends Component {
         .then(response => response.json())
         .then(jsonresponse => {
             if ( !jsonresponse.admin ) {
-                console.log("REROUTING")
                 this.setState({
                     admin: false
                 })

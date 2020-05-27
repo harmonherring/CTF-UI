@@ -44,9 +44,6 @@ class CreateChallengeModal extends React.Component {
     constructor(props) {
         super(props)
 
-        console.log(this.props.difficulties)
-        console.log(this.props.categories)
-
         this.state = {
             is_creator: true,
             new_tag: "",
