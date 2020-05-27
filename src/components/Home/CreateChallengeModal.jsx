@@ -128,7 +128,7 @@ class CreateChallengeModal extends React.Component {
 
     render() {
         return(
-            <Modal size="lg" isOpen={this.props.isOpen} toggle={() => this.props.toggle()}>
+            <Modal size="xl" isOpen={this.props.isOpen} toggle={() => this.props.toggle()}>
                 <ModalHeader toggle={() => this.props.toggle()}>
                     <h2>Create Challenge</h2>
                 </ModalHeader>
