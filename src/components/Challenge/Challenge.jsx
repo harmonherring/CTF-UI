@@ -288,24 +288,6 @@ class Challenge extends React.Component {
         }))
     }
 
-    createTag = () => {
-        this.setState({
-            tag_error: ""
-        })
-        POST(this.props.oidc.user.access_token, "/challenges/" + this.state.challenge_id + "/tags/" + this.state.new_tag, {})
-        .then(response => Promise.all([response.status, response.json()]))
-        .then(response => {
-            if (response[0] === 201) {
-                this.getTags()
-                .then(() => this.closeModal())
-            } else {
-                this.setState({
-                    tag_error: response[1].message
-                })
-            }
-        })
-    }
-
     getUserInfo = () => {
         GET(this.props.oidc.user.access_token, "/user")
         .then(response => response.json())
@@ -332,24 +314,6 @@ class Challenge extends React.Component {
                                     <Badge key={tag} style={{"margin": "2px", "fontSize": "12px"}} color="secondary">{tag}</Badge>  
                                 )
                             }
-                            {
-                                this.state.data.submitter === this.state.userinfo.preferred_username || this.state.userinfo.admin ? <StyledPlus color="#4CAF50" size={22} onClick={() => this.showModal("create_tag")} /> : <></>
-                            }
-                            <Modal isOpen={this.state.show_modal === "create_tag"} toggle={this.closeModal}>
-                                <ModalHeader toggle={this.closeModal}>
-                                    Create Tag
-                                </ModalHeader>
-                                <ModalBody>
-                                    {this.state.tag_error ? <Alert color="danger">{this.state.tag_error}</Alert> : <></>}
-                                    <FormGroup>
-                                        <Label style={{"marginBottom": "0"}} for="tag">Tag</Label>
-                                        <Input style={{"height": "calc(1.2em + 1rem + 2px"}} id="tag" placeholder="Web" onChange={this.modifyState("new_tag")} value={this.state.new_tag} />
-                                    </FormGroup>
-                                </ModalBody>
-                                <ModalFooter>
-                                    <Button color="primary" className="float-right" onClick={() => this.createTag()}>Create Tag</Button>
-                                </ModalFooter>
-                            </Modal>
                         </Col>
                         <Col lg="3">
                             <Button color="primary" className="float-lg-right"><Download size={18} style={{"marginBottom": "1px"}} /> Download</Button>
