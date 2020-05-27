@@ -1,5 +1,19 @@
 import React from 'react'
-import { Alert, Badge, Container, Row, Col, Card, CardHeader, CardBody, Button, Table, InputGroup, InputGroupAddon, Input, InputGroupText, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label } from 'reactstrap'
+import { 
+    Alert, 
+    Badge, 
+    Container, 
+    Row, 
+    Col, 
+    Card, 
+    CardHeader, 
+    CardBody, 
+    Button, 
+    Table, 
+    InputGroup, 
+    InputGroupAddon, 
+    Input, 
+    InputGroupText } from 'reactstrap'
 import { connect } from 'react-redux'
 import Loader from '../Loader'
 import { GET, POST, DELETE } from '../../actions'
@@ -8,6 +22,8 @@ import { GoPlus } from 'react-icons/go'
 import styled from 'styled-components'
 import BounceLoader from 'react-spinners/BounceLoader'
 import { capitalize } from '../../utils'
+import CreateFlagModal from './CreateFlagModal'
+import CreateHintModal from './CreateHintModal'
 
 const SpacedRow = styled(Row)`
     margin-bottom: 20px;
@@ -65,14 +81,9 @@ class Challenge extends React.Component {
             flag_attempt: "",
             flag_loading: false,
             flag_result: null,
-            hint_error: "",
             show_modal: null,
             userinfo: {},
-            new_flag: {},
-            flag_error: "",
-            new_hint: {},
-            new_tag: "",
-            tag_error: ""
+            current_flag_id: null
         }
     }
 
@@ -105,7 +116,7 @@ class Challenge extends React.Component {
     getChallenge = ( challenge_id ) => {
         return GET(this.props.oidc.user.access_token, "/challenges/" + challenge_id)
         .then(response => response.json())
-        .then(jsonresponse => { 
+        .then(jsonresponse => {
             this.setState({
                 data: jsonresponse
             }); 
@@ -155,16 +166,6 @@ class Challenge extends React.Component {
             }
         })
     }
-
-    modifyNewHint = (flag_id, field) => e => {
-        this.setState({
-            new_hint: {
-                ...this.state.new_hint,
-                flag_id: flag_id,
-                [field]: e.target.value
-            }
-        })
-    }
     
     attemptFlag = () => {
         this.setState({
@@ -205,54 +206,9 @@ class Challenge extends React.Component {
         .then(() => this.assignRelativeIds())
     }
 
-    createFlag = () => {
-        this.setState({
-            flag_error: ""
-        })
-        POST(this.props.oidc.user.access_token, "/challenges/" + this.state.challenge_id + "/flags", {
-            flag: this.state.new_flag.flag,
-            point_value: this.state.new_flag.point_value
-        })
-        .then(response => Promise.all([response.status, response.json()]))
-        .then(response => {
-            if (response[0] === 201) {
-                this.getFlags()
-                this.closeModal()
-                this.setState({
-                    new_flag: {}
-                })
-            } else {
-                this.setState({
-                    flag_error: response[1].message
-                })
-            }
-        })
-    }
-
     deleteFlag = (flag_id) => {
         DELETE(this.props.oidc.user.access_token, "/flags/" + flag_id)
         .then(() => this.getFlags())
-    }
-
-    createHint = () => {
-        this.setState({
-            new_hint_error: ""
-        })
-        POST(this.props.oidc.user.access_token, "/flags/" + this.state.new_hint.flag_id + "/hints", {...this.state.new_hint})
-        .then(response => Promise.all([response.status, response.json()]))
-        .then(response => {
-            if (response[0] === 201) {
-                this.getFlags()
-                .then(() => this.closeModal())
-                this.setState({
-                    new_hint: {}
-                })
-            } else {
-                this.setState({
-                    new_hint_error: response[1].message
-                })
-            }
-        })
     }
 
     purchaseHint = (hint_id) => {
@@ -376,25 +332,12 @@ class Challenge extends React.Component {
                                     </Row>
                                 </CardBody>
                             </Card>
-                            <Modal isOpen={this.state.show_modal === "create_flag"} toggle={this.closeModal}>
-                                <ModalHeader toggle={this.closeModal}>
-                                    <h2>Create Flag</h2>
-                                </ModalHeader>
-                                <ModalBody>
-                                    {this.state.flag_error ? <Alert color="danger">{this.state.flag_error}</Alert> : <></>}
-                                    <FormGroup>
-                                        <Label styled={{"marginBottom": "0"}} for="flagData">Flag Data</Label>
-                                        <Input style={{"height": "calc(1.2em + 1rem + 2px"}} id="flagData" placeholder="flag{ABCDEFGHIJKLMNOPQRSTUVWXYZ}" onChange={this.modifyStateObject("new_flag", "flag")} value={this.state.new_flag.flag} />
-                                    </FormGroup>
-                                    <FormGroup>
-                                        <Label styled={{"marginBottom": "0"}} for="pointValue">Point Value</Label>
-                                        <Input style={{"height": "calc(1.2em + 1rem + 2px"}} id="pointValue" placeholder="30" onChange={this.modifyStateObject("new_flag", "point_value")} value={this.state.new_flag.point_value} />
-                                    </FormGroup>
-                                </ModalBody>
-                                <ModalFooter>
-                                    <Button color="primary" className="float-right" onClick={() => this.createFlag()}>Create Flag</Button>
-                                </ModalFooter>
-                            </Modal>
+                            <CreateFlagModal 
+                                successCallback={() => this.getFlags().then(() => this.closeModal())}
+                                closeModal={this.closeMOdal}
+                                isOpen={this.state.show_modal === "create_flag"}
+                                challenge_id={this.state.challenge_id}
+                            />
                         </Col>
                     </SpacedRow>
                     <SpacedRow>
@@ -406,7 +349,7 @@ class Challenge extends React.Component {
                                     {
                                         Object.entries(this.state.data.flags).map( ([id, flag_data]) => 
                                             <section key={id}>
-                                                <h3>Flag {flag_data.relative_id} <StyledPlus color="#4CAF50" size={26} onClick={() => {this.showModal("create_hint"); this.setState({new_hint: {flag_id: flag_data.id}})}} /></h3>
+                                                <h3>Flag {flag_data.relative_id} <StyledPlus color="#4CAF50" size={26} onClick={() => {this.setState({current_flag_id: flag_data.id}); this.showModal("create_hint")}} /></h3>
                                                 <Table responsive>
                                                     <thead>
                                                         <tr>
@@ -432,25 +375,12 @@ class Challenge extends React.Component {
                                         )
                                     }
                                 </CardBody>
-                                <Modal isOpen={this.state.show_modal === "create_hint"} toggle={this.closeModal}>
-                                    <ModalHeader toggle={this.closeModal}>
-                                        <h2>Create Hint</h2>
-                                    </ModalHeader>
-                                    <ModalBody>
-                                        {this.state.new_hint_error ? <Alert color="danger">{this.state.new_hint_error}</Alert> : <></>}
-                                        <FormGroup>
-                                            <Label styled={{"marginBottom": "0"}} for="hintCost">Hint Cost</Label>
-                                            <Input style={{"height": "calc(1.2em + 1rem + 2px"}} id="hintCost" placeholder="20" onChange={this.modifyStateObject("new_hint", "cost")} value={this.state.new_flag.flag} />
-                                        </FormGroup>
-                                        <FormGroup>
-                                            <Label styled={{"marginBottom": "0"}} for="hint">Hint</Label>
-                                            <Input type="textarea" rows={6} id="hint" placeholder="Try Google?" onChange={this.modifyStateObject("new_hint", "hint")} value={this.state.new_flag.point_value} />
-                                        </FormGroup>
-                                    </ModalBody>
-                                    <ModalFooter>
-                                        <Button color="primary" onClick={() => this.createHint()}>Create Hint</Button>
-                                    </ModalFooter>
-                                </Modal>
+                                <CreateHintModal 
+                                    isOpen={this.state.show_modal === "create_hint"}
+                                    successCallback={() => this.getFlags().then(() => this.closeModal())}
+                                    flag_id={this.state.current_flag_id}
+                                    closeModal={this.closeModal}
+                                />
                             </Card>
                         </Col>
                     </SpacedRow>
