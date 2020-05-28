@@ -25,6 +25,7 @@ import { capitalize } from '../../utils'
 import CreateFlagModal from './CreateFlagModal'
 import CreateHintModal from './CreateHintModal'
 import ReactMarkdown from 'react-markdown'
+import CodeBlock from '../CodeBlock'
 
 const SpacedRow = styled(Row)`
     margin-bottom: 20px;
@@ -282,7 +283,7 @@ class Challenge extends React.Component {
                             <Card>
                                 <CardHeader><h2>Description</h2></CardHeader>
                                 <CardBody>
-                                    <ReactMarkdown source={this.state.data.description} escapeHtml={true} />
+                                    <ReactMarkdown source={this.state.data.description} escapeHtml={true} renderers={{ code: CodeBlock }} />
                                 </CardBody>
                             </Card>
                         </Col>

@@ -17,6 +17,7 @@ import {
     Input,
     Button
 } from 'reactstrap'
+import CodeBlock from '../CodeBlock'
 
 const StyledLabel = styled(Label)`
     margin-bottom: 0 !important;
@@ -167,7 +168,7 @@ class CreateChallengeModal extends React.Component {
                             </FormGroup>
                         </Col>
                         <Col lg="6">
-                            <ReactMarkdown source={this.state.new_challenge.description} escapeHtml={true} />
+                            <ReactMarkdown renderers={{ code: CodeBlock }} source={this.state.new_challenge.description} escapeHtml={true} />
                         </Col>
                     </Row>
                     

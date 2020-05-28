@@ -5,6 +5,7 @@ import { Badge, Row, Col } from 'reactstrap'
 import { FaFlag, FaRegTrashAlt, FaAngleDown } from 'react-icons/fa'
 import { capitalize } from '../../utils'
 import ReactMarkdown from 'react-markdown'
+import CodeBlock from '../CodeBlock'
 
 const StyledTrash = styled(FaRegTrashAlt)`
     color: #E51C23;
@@ -136,7 +137,7 @@ class Challenge extends Component {
                     </Row>
                     <hr />
                     <OverflowContainer clicked={this.state.clicked}>
-                        <ReactMarkdown style={{"transition": "max-height .5s ease-out"}} source={this.props.description} escapeHtml={true} />
+                        <ReactMarkdown renderers={{ code: CodeBlock }} source={this.props.description} escapeHtml={true} />
                         <Overlay onClick={() => this.setState({clicked: true})} clicked={this.state.clicked}><FaAngleDown style={{"bottom": "0", "position": "absolute"}} size={30} /></Overlay>
                     </OverflowContainer>
                 </ChallengeBody>
