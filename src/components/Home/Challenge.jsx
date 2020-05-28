@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { Badge, Row, Col } from 'reactstrap'
-import { FaFlag, FaRegTrashAlt } from 'react-icons/fa'
+import { FaFlag, FaRegTrashAlt, FaAngleDown } from 'react-icons/fa'
 import { capitalize } from '../../utils'
 import ReactMarkdown from 'react-markdown'
 
@@ -48,7 +48,56 @@ const BadgeWrapper = styled.h5`
     margin: 2px;
 `;
 
+const Overlay = styled.div`
+    position: absolute;
+    bottom: calc(2.5rem + 23px);
+    left: 0;
+    text-align: center;
+    margin: 0 35px;
+    padding: 0;
+    width: 100%;
+    background-image: linear-gradient(to bottom, transparent, #FFF);
+    height: 100px;
+    visibility: ${props => props.clicked ? "hidden !important" : "visible"};
+
+    @media (max-width: 575px) {
+        width: 79%;
+    }
+
+    @media (min-width: 576px) {
+        width: 440px;
+    }
+
+    @media (min-width: 768px) {
+        width: 620px;
+    }
+
+    @media (min-width: 992px) {
+        width: 860px;
+    }
+
+    @media (min-width: 1200px) { 
+        width: 1040px;
+    }
+
+    &:hover {
+        cursor: pointer
+    }
+`;
+
+const OverflowContainer = styled.div`
+    max-height: ${props => props.clicked ? "none !important" : "10rem !important"};
+    overflow: hidden;
+`;
+
 class Challenge extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            clicked: false
+        }
+    }
     getCompletedFlags = () => {
         let count = 0
         for (const data of Object.values(this.props.flags)) {
@@ -86,7 +135,10 @@ class Challenge extends Component {
                         </Col>
                     </Row>
                     <hr />
-                    <ReactMarkdown source={this.props.description} escapeHtml={true} />
+                    <OverflowContainer clicked={this.state.clicked}>
+                        <ReactMarkdown style={{"transition": "max-height .5s ease-out"}} source={this.props.description} escapeHtml={true} />
+                        <Overlay onClick={() => this.setState({clicked: true})} clicked={this.state.clicked}><FaAngleDown style={{"bottom": "0", "position": "absolute"}} size={30} /></Overlay>
+                    </OverflowContainer>
                 </ChallengeBody>
                 <ChallengeFooter>
                     Submitted by <a href={window.location.href}>{this.props.submitter_username}</a> on {this.props.ts}
