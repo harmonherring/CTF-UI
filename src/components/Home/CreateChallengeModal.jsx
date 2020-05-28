@@ -125,6 +125,25 @@ class CreateChallengeModal extends React.Component {
         })
     }
 
+    onFileChange = e => {
+        this.setState({
+            selectedFile: e.target.files[0]
+        })
+    }
+
+    onFileUpload = () => {
+        let formData = new FormData();
+        formData.append(
+            "challengeFile",
+            this.state.selectedFile,
+            this.state.selectedFile.name
+        )
+        console.log(formData)
+
+        fetch("https://s3.csh.rit.edu/ctf")
+        .then(response => console.log(response))
+    }
+
     render() {
         return(
             <Modal size="xl" isOpen={this.props.isOpen} toggle={() => this.props.toggle()}>
@@ -171,16 +190,27 @@ class CreateChallengeModal extends React.Component {
                             <ReactMarkdown renderers={{ code: CodeBlock }} source={this.state.new_challenge.description} escapeHtml={true} />
                         </Col>
                     </Row>
+                    <Row>
+                        <Col lg="6">
+                            <FormGroup>
+                                <StyledLabel for="tag">Tags</StyledLabel>
+                                <StyledInput style={{"marginBottom": "8px"}} id="tag" onChange={this.modifyState("new_tag")} onKeyPress={this.checkSubmit} placeholder="Web" value={this.state.new_tag} />
+                                {
+                                    this.state.new_challenge.tags.map( (tag) => 
+                                        <NewTag key={tag} onClick={() => this.deleteTag(tag)} color="primary">{tag}</NewTag>
+                                    )
+                                }
+                            </FormGroup>
+                        </Col>
+                        <Col lg="6">
+                            <FormGroup>
+                                <Label for="upload">Upload File</Label>
+                                <StyledInput name="challengeFile" type="file" id="upload" onChange={this.onFileChange} />
+                                <Button color="primary" onClick={() => this.onFileUpload()}>Upload</Button>
+                            </FormGroup>
+                        </Col>
+                    </Row>
                     
-                    <FormGroup>
-                        <StyledLabel for="tag">Tags</StyledLabel>
-                        <StyledInput style={{"marginBottom": "8px"}} id="tag" onChange={this.modifyState("new_tag")} onKeyPress={this.checkSubmit} placeholder="Web" value={this.state.new_tag} />
-                        {
-                            this.state.new_challenge.tags.map( (tag) => 
-                                <NewTag key={tag} onClick={() => this.deleteTag(tag)} color="primary">{tag}</NewTag>
-                            )
-                        }
-                    </FormGroup>
                     <FormGroup>
                         <Label check style={{"marginLeft": "22px"}}>
                             <Input type="checkbox" checked={this.state.is_creator} onChange={() => {this.toggleCreator(); this.setState({new_challenge: {...this.state.new_challenge, author: this.props.current_username}})}} />{' '}
