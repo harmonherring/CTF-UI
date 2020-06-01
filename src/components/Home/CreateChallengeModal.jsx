@@ -154,7 +154,7 @@ class CreateChallengeModal extends React.Component {
             }
         })
 
-        request.open("POST", "http://localhost:6969/challenges")
+        request.open("POST", process.env.REACT_APP_API_ROUTE + "/challenges")
         request.setRequestHeader("Authorization", "Bearer " + this.props.oidc.user.access_token)
 
         request.send(formData)
