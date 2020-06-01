@@ -68,6 +68,14 @@ const HoverableTr = styled.tr`
     }
 `;
 
+const DownloadButton = styled.a`
+    color: #FFF !important;
+
+    &:hover {
+        cursor: pointer;
+    }
+`;
+
 class Challenge extends React.Component {
     constructor(props) {
         super(props)
@@ -274,7 +282,9 @@ class Challenge extends React.Component {
                             }
                         </Col>
                         <Col lg="3">
-                            <Button color="primary" className="float-lg-right"><Download size={18} style={{"marginBottom": "1px"}} /> Download</Button>
+                            {this.state.data.download && 
+                                <DownloadButton href={this.state.data.download} className="btn btn-primary float-lg-right"><Download size={18} style={{"verticalAlign": "top"}} /> Download</DownloadButton>
+                            }
                         </Col>
                         <hr style={{"width": "97%"}} />
                     </SpacedRow>

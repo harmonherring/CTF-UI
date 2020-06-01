@@ -2,9 +2,9 @@ import React from 'react'
 import styled from 'styled-components'
 import { capitalize } from '../../utils'
 import { connect } from 'react-redux'
-import { POST } from '../../actions'
 import ReactMarkdown from 'react-markdown'
 import {
+    Alert,
     Col,
     Badge,
     Row,
@@ -15,7 +15,8 @@ import {
     FormGroup,
     Label,
     Input,
-    Button
+    Button,
+    Progress
 } from 'reactstrap'
 import CodeBlock from '../CodeBlock'
 
@@ -56,7 +57,8 @@ class CreateChallengeModal extends React.Component {
                 category: this.props.categories ? Object.keys(this.props.categories)[0] : "",
                 description: ""
             },
-            create_challenge_error: ""
+            create_challenge_error: "",
+            progress: 0
         }
     }
 
@@ -108,40 +110,54 @@ class CreateChallengeModal extends React.Component {
         })
     }
 
-    createChallenge = () => {
-        this.setState({
-            create_challenge_error: ""
-        })
-        POST(this.props.oidc.user.access_token, "/challenges", {...this.state.new_challenge})
-        .then(response => Promise.all([response.status, response.json()]))
-        .then(response => {
-            if (response[0] === 201) {
-                this.props.successCallback()
-            } else {
-                this.setState({
-                    create_challenge_error: response[1].message
-                })
-            }
-        })
-    }
-
     onFileChange = e => {
         this.setState({
             selectedFile: e.target.files[0]
         })
     }
 
-    onFileUpload = () => {
+    createChallenge = () => {
+        this.setState({
+            create_challenge_error: "",
+            progress: 0
+        })
         let formData = new FormData();
         formData.append(
-            "challengeFile",
+            "file",
             this.state.selectedFile,
-            this.state.selectedFile.name
         )
-        console.log(formData)
+        for (let [key, value] of Object.entries(this.state.new_challenge)) {
+            formData.append(key, value)
+        }
 
-        fetch("https://s3.csh.rit.edu/ctf")
-        .then(response => console.log(response))
+        let request = new XMLHttpRequest();
+
+        request.upload.onprogress = ((e) => {
+            this.setState({
+                progress: Math.floor((e.loaded / e.total) * 100)
+            })
+        })
+        request.onload = (() => {
+            if (request.status === 202) {
+                this.props.successCallback()
+            } else {
+                try {
+                    this.setState({
+                        create_challenge_error: JSON.parse(request.response).message
+                    })
+                } catch (e) {
+                    console.log(e)
+                    this.setState({
+                        create_challenge_error: "Something went extra wrong. I'm sorry :("
+                    })
+                }
+            }
+        })
+
+        request.open("POST", "http://localhost:6969/challenges")
+        request.setRequestHeader("Authorization", "Bearer " + this.props.oidc.user.access_token)
+
+        request.send(formData)
     }
 
     render() {
@@ -151,6 +167,7 @@ class CreateChallengeModal extends React.Component {
                     <h2>Create Challenge</h2>
                 </ModalHeader>
                 <ModalBody>
+                    { this.state.create_challenge_error && <Alert color="danger">{this.state.create_challenge_error}</Alert>}
                     <FormGroup>
                         <StyledLabel for="title">Title</StyledLabel>
                         <StyledInput id="title" placeholder="My Awesome Challenge" onChange={this.modifyStateObject("new_challenge", "title")} value={this.state.new_challenge.title} />
@@ -206,7 +223,6 @@ class CreateChallengeModal extends React.Component {
                             <FormGroup>
                                 <Label for="upload">Upload File</Label>
                                 <StyledInput name="challengeFile" type="file" id="upload" onChange={this.onFileChange} />
-                                <Button color="primary" onClick={() => this.onFileUpload()}>Upload</Button>
                             </FormGroup>
                         </Col>
                     </Row>
@@ -221,6 +237,7 @@ class CreateChallengeModal extends React.Component {
                         <StyledLabel for="author">Author</StyledLabel>
                         <Input id="author" placeholder="Jeff Mahoney" onChange={this.modifyStateObject("new_challenge", "author")} value={this.state.new_challenge.author} />
                     </FormGroup>
+                    { this.state.progress !== 0 && <Progress style={{"height": "16px", "borderRadius": ".25rem"}} animated color="primary" value={this.state.progress}>{this.state.progress + "%"}</Progress> }
                 </ModalBody>
                 <ModalFooter>
                     <Button color="primary" onClick={() => this.createChallenge()}>Create Challenge</Button>

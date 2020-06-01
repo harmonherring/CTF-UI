@@ -9,6 +9,7 @@ import { GET, DELETE } from '../../actions'
 import { FaRegEdit } from 'react-icons/fa'
 import { capitalize } from '../../utils'
 import CreateChallengeModal from './CreateChallengeModal'
+import CreateSuccessModal from './CreateSuccessModal'
 
 const StyledChallenge = styled(Challenge)`
     box-shadow 0 1px 4px rgba(0, 0, 0, 0.4);
@@ -240,7 +241,12 @@ class Home extends Component {
                         categories={this.state.categories} 
                         difficulties={this.state.difficulties}
                         current_username={this.state.userinfo.preferred_username}
-                        successCallback={() => {this.getChallenges().then(() => this.closeModal())}}
+                        successCallback={() => this.showModal("create_success")}
+                    />
+                    <CreateSuccessModal 
+                        isOpen={this.state.show_modal === "create_success"}
+                        toggle={this.closeModal}
+                        exit={() => {this.getChallenges(); this.closeModal()}}
                     />
                     <Row>
                         <Col lg={{ size: 4, order: 2}} style={{"margin-bottom": "12px"}}>
