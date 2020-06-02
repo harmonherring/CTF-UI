@@ -134,7 +134,7 @@ class CreateChallengeModal extends React.Component {
 
         request.upload.onprogress = ((e) => {
             this.setState({
-                progress: Math.floor((e.loaded / e.total) * 100)
+                progress: ((e.loaded / e.total) * 100).toFixed(2)
             })
         })
         request.onload = (() => {
