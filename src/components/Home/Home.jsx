@@ -317,7 +317,7 @@ class Home extends Component {
                                         description={challenge.description}
                                         submitter_username={challenge.submitter}
                                         submitter_full_name={challenge.author}
-                                        ts="May 21, 2020"
+                                        ts={challenge.ts}
                                         flags={challenge.flags}
                                         tags={challenge.tags}
                                         deleteChallenge={this.toggleDeleteModal}

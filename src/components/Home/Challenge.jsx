@@ -6,6 +6,7 @@ import { FaFlag, FaRegTrashAlt, FaAngleDown } from 'react-icons/fa'
 import { capitalize } from '../../utils'
 import ReactMarkdown from 'react-markdown'
 import CodeBlock from '../CodeBlock'
+import Moment from 'react-moment'
 
 const StyledTrash = styled(FaRegTrashAlt)`
     color: #E51C23;
@@ -142,7 +143,7 @@ class Challenge extends Component {
                     </OverflowContainer>
                 </ChallengeBody>
                 <ChallengeFooter>
-                    Submitted by <a href={window.location.href}>{this.props.submitter_username}</a> on {this.props.ts}
+                    Submitted by <a href={window.location.href}>{this.props.submitter_username}</a> on <Moment utc local format="LLL">{this.props.ts}</Moment>
                 </ChallengeFooter>
             </ChallengeContainer>
         );
