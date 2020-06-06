@@ -80,7 +80,8 @@ class Home extends Component {
             new_challenge: {
                 tags: []
             },
-            show_modal: ""
+            show_modal: "",
+            search_query: ""
         }
     }
 
@@ -123,7 +124,7 @@ class Home extends Component {
     }
 
     getChallenges = () => {
-        return GET(this.props.oidc.user.access_token, "/challenges?categories=" + this.getCheckedCategories() + "&difficulties=" + this.getCheckedDifficulties())
+        return GET(this.props.oidc.user.access_token, "/challenges?categories=" + this.getCheckedCategories() + "&difficulties=" + this.getCheckedDifficulties() + "&search=" + this.state.search_query)
         .then(response => response.json())
         .then(jsonresponse => this.setState({
             challenges: jsonresponse
@@ -228,6 +229,16 @@ class Home extends Component {
         })
     }
 
+    onSearchChange = e => {
+        clearTimeout(this.timer)
+        this.setState({
+            search_query: e.target.value
+        })
+        this.timer = setTimeout(() => {
+            this.getChallenges()
+        }, 350)
+    }
+
     render () {
         if (this.state.isLoading) {
             return <Loader loading={this.state.showLoader} />
@@ -250,13 +261,13 @@ class Home extends Component {
                     />
                     <Row>
                         <Col lg={{ size: 4, order: 2}} style={{"margin-bottom": "12px"}}>
-                            <StyledInput placeholder="Search" />
+                            <StyledInput placeholder="Search" onChange={this.onSearchChange} />
                         </Col>
                         <Col lg={{ size: 4, order: 1}} style={{"margin-bottom": "12px"}}>
                             <Row>
                                 <StyledList type="select" value={this.state.sort_by} onChange={this.handleChange('sort_by')} style={{"marginBottom": "8px"}}>
                                     {this.state.sort_by === "" && <option value="" disabled>
-                                        Sort By    
+                                        Sort By
                                     </option>}
                                     <option value="1">Date Added: New to Old</option>
                                     <option value="2">Date Added: Old to New</option>
