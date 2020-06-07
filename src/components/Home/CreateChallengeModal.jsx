@@ -42,6 +42,8 @@ const NewTag = styled(Badge)`
     }
 `;
 
+const RequiredStar = () => (<span style={{"color": "red"}}>*</span>)
+
 class CreateChallengeModal extends React.Component {
     constructor(props) {
         super(props)
@@ -53,13 +55,23 @@ class CreateChallengeModal extends React.Component {
                 tags: [],
                 author: this.props.current_username,
                 title: "",
-                difficulty: this.props.difficulties ? Object.keys(this.props.difficulties)[0] : "",
-                category: this.props.categories ? Object.keys(this.props.categories)[0] : "",
+                difficulty: "",
+                category: "",
                 description: ""
             },
             create_challenge_error: "",
             progress: 0
         }
+    }
+
+    componentDidMount = () => {
+        this.setState({
+            new_challenge: {
+                ...this.state.new_challenge,
+                category: this.props.categories ? Object.keys(this.props.categories)[0] : "",
+                difficulty: this.props.difficulties ? Object.keys(this.props.difficulties)[0] : "",
+            }
+        })
     }
 
     toggleCreator = () => {
@@ -160,6 +172,19 @@ class CreateChallengeModal extends React.Component {
         request.send(formData)
     }
 
+    getSelectedCategory = () => {
+        for (let category of Object.values(this.props.categories)) {
+            if (category.name === this.state.new_challenge.category.toLowerCase()) {
+                return category
+            }
+        }
+        return {
+            name: "",
+            id: -1,
+            upload_required: false
+        }
+    }
+
     render() {
         return(
             <Modal size="xl" isOpen={this.props.isOpen} toggle={() => this.props.toggle()}>
@@ -169,13 +194,13 @@ class CreateChallengeModal extends React.Component {
                 <ModalBody>
                     { this.state.create_challenge_error && <Alert color="danger">{this.state.create_challenge_error}</Alert>}
                     <FormGroup>
-                        <StyledLabel for="title">Title</StyledLabel>
+                        <StyledLabel for="title">Title <RequiredStar /></StyledLabel>
                         <StyledInput id="title" placeholder="My Awesome Challenge" onChange={this.modifyStateObject("new_challenge", "title")} value={this.state.new_challenge.title} />
                     </FormGroup>
                     <FormGroup>
                         <Row>
                             <Col xs="6">
-                                <StyledLabel for="category">Category</StyledLabel>
+                                <StyledLabel for="category">Category <RequiredStar /></StyledLabel>
                                 <StyledList id="category" type="select" onChange={this.modifyStateObject("new_challenge", "category")} value={this.state.new_challenge.category}>
                                     {
                                         Object.keys(this.props.categories).map( (name) => 
@@ -185,7 +210,7 @@ class CreateChallengeModal extends React.Component {
                                 </StyledList>
                             </Col>
                             <Col xs="6">
-                                <StyledLabel for="difficulty">Difficulty</StyledLabel>
+                                <StyledLabel for="difficulty">Difficulty <RequiredStar /></StyledLabel>
                                 <StyledList id="difficulty" type="select" onChange={this.modifyStateObject("new_challenge", "difficulty")} value={this.state.new_challenge.difficulty}>
                                     {
                                         Object.keys(this.props.difficulties).map( (name) => 
@@ -199,7 +224,7 @@ class CreateChallengeModal extends React.Component {
                     <Row>
                         <Col lg="6">
                             <FormGroup>
-                                <Label for="description">Description</Label>
+                                <Label for="description">Description <RequiredStar /></Label>
                                 <Input type="textarea" rows={10} id="description" placeholder="Description of my awesome challenge" onChange={this.modifyStateObject("new_challenge", "description")} value={this.state.new_challenge.description} />
                             </FormGroup>
                         </Col>
@@ -221,7 +246,7 @@ class CreateChallengeModal extends React.Component {
                         </Col>
                         <Col lg="6">
                             <FormGroup>
-                                <Label for="upload">Upload File</Label>
+                            <Label for="upload">Upload File {this.getSelectedCategory().upload_required && <RequiredStar />}</Label>
                                 <StyledInput name="challengeFile" type="file" id="upload" onChange={this.onFileChange} />
                             </FormGroup>
                         </Col>
@@ -234,7 +259,7 @@ class CreateChallengeModal extends React.Component {
                         </Label>
                     </FormGroup>
                     <FormGroup style={{"display": this.state.is_creator ? "none" : "block"}}>
-                        <StyledLabel for="author">Author</StyledLabel>
+                        <StyledLabel for="author">Author <RequiredStar /></StyledLabel>
                         <Input id="author" placeholder="Jeff Mahoney" onChange={this.modifyStateObject("new_challenge", "author")} value={this.state.new_challenge.author} />
                     </FormGroup>
                     { this.state.progress !== 0 && <Progress style={{"height": "16px", "borderRadius": ".25rem"}} animated color="primary" value={this.state.progress}>{this.state.progress + "%"}</Progress> }

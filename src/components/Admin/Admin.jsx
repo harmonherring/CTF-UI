@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import { GET, POST, DELETE } from '../../actions';
 import { Redirect } from 'react-router';
 import { Loader } from '../'
+import { capitalize } from '../../utils'
 
 
 const StyledInput = styled(Input)`
@@ -40,11 +41,12 @@ class Admin extends Component {
             categories: [],
             difficulties: [],
             new_difficulty: {
-                "name": ""
+                name: ""
             },
             new_category: {
-                "name": "",
-                "description": ""
+                name: "",
+                description: "",
+                upload_required: false
             },
             difficultyModal: false,
             categoryModal: false,
@@ -102,10 +104,6 @@ class Admin extends Component {
         return GET(this.props.oidc.user.access_token, '/difficulties')
         .then(response => response.json())
         .then(jsonresponse => this.setState({difficulties: jsonresponse}));
-    }
-
-    capitalize = (str) => {
-        return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
     updateStateObject = (event, object, parameter) => {
@@ -175,8 +173,7 @@ class Admin extends Component {
         });
 
         POST(this.props.oidc.user.access_token, '/categories', {
-            name: this.state.new_category.name,
-            description: this.state.new_category.description
+            ...this.state.new_category
         })
         .then(response => Promise.all([response.status, response.json()]))
         .then(response => {
@@ -187,6 +184,19 @@ class Admin extends Component {
                 this.setState({error: response[1].message ? response[1] : "Something is wrong"});
             }
         });
+    }
+
+    toggleUploadRequirement = (e) => {
+        this.setState({
+            new_category: {
+                ...this.state.new_category,
+                upload_required: !this.state.new_category.upload_required
+            }
+        })
+    }
+
+    deSpace = (word) => {
+        return word.replace(/\s/g, '')
     }
 
     render () {
@@ -208,12 +218,12 @@ class Admin extends Component {
                                 {
                                     this.state.categories.map(category => 
                                         <>
-                                            <StyledListItem key={category.name} id={category.name + "-popover"} onMouseEnter={() => this.setState({[category.name + "-popover"]: true})} onMouseLeave={() => this.setState({[category.name + "-popover"]: false})} >
-                                                <h5 style={{"margin": 0}}><span className="float-left">{this.capitalize(category.name)}</span> <span className="float-right"><StyledTrash size={18} onClick={() => this.deleteCategory(category.name)} /> <Badge pill color="primary">{category.count}</Badge></span></h5>
+                                            <StyledListItem key={category.name} id={this.deSpace(category.name) + "-popover"} onMouseEnter={() => this.setState({[this.deSpace(category.name) + "-popover"]: true})} onMouseLeave={() => this.setState({[this.deSpace(category.name) + "-popover"]: false})} >
+                                                <h5 style={{"margin": 0}}><span className="float-left">{capitalize(category.name)}</span> <span className="float-right"><StyledTrash size={18} onClick={() => this.deleteCategory(category.name)} /> <Badge pill color="primary">{category.count}</Badge></span></h5>
                                             </StyledListItem>
-                                            <Popover placement="right" isOpen={this.state[category.name + "-popover"]} target={category.name + "-popover"}>
+                                            <Popover placement="right" isOpen={this.state[this.deSpace(category.name) + "-popover"]} target={this.deSpace(category.name) + "-popover"}>
                                                 <PopoverHeader>
-                                                    {this.capitalize(category.name)}
+                                                    {capitalize(category.name)}
                                                 </PopoverHeader>
                                                 <PopoverBody>
                                                     {category.description}
@@ -232,7 +242,11 @@ class Admin extends Component {
                                     <StyledInput id="new_category_name" placeholder="Food" onChange={(e) => this.updateStateObject(e, "new_category", "name")} value={this.state.new_category.name} />
                                     <br />
                                     <Label for="new_category_description">Category Name</Label>
-                                    <Input style={{"height": "150px"}} type="textarea" id="new_category_description" placeholder="Eat a whole cake" onChange={(e) => this.updateStateObject(e, "new_category", "description")} value={this.state.new_category.description}></Input>
+                                    <Input style={{"height": "150px", "marginBottom": "10px"}} type="textarea" id="new_category_description" placeholder="Eat a whole cake" onChange={(e) => this.updateStateObject(e, "new_category", "description")} value={this.state.new_category.description}></Input>
+                                    <Label check>
+                                        <Input style={{"marginLeft": "1px"}} type="checkbox" onChange={this.toggleUploadRequirement} checked={this.state.new_category.upload_required} />{' '}
+                                        File Upload Required
+                                    </Label>
                                 </ModalBody>
                                 <ModalFooter>
                                     <Button color="primary" onClick={() => this.createCategory()}>Create Category</Button>
@@ -249,7 +263,7 @@ class Admin extends Component {
                                 {
                                     this.state.difficulties.map(difficulty => 
                                         <StyledListItem key={difficulty.name}>
-                                            <h5 style={{"margin": 0}}><span className="float-left">{this.capitalize(difficulty.name)}</span><span className="float-right"><StyledTrash size={18} onClick={() => this.deleteDifficulty(difficulty.name)} /> <Badge pill color="primary">{difficulty.count}</Badge></span></h5>
+                                            <h5 style={{"margin": 0}}><span className="float-left">{capitalize(difficulty.name)}</span><span className="float-right"><StyledTrash size={18} onClick={() => this.deleteDifficulty(difficulty.name)} /> <Badge pill color="primary">{difficulty.count}</Badge></span></h5>
                                         </StyledListItem>
                                     )
                                 }
