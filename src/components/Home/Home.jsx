@@ -72,6 +72,7 @@ class Home extends Component {
             isLoading: true,
             showLoader: false,
             sort_by: "",
+            order_by: "",
             dropdownOpen: false,
             categories: {},
             difficulties: {},
@@ -127,7 +128,11 @@ class Home extends Component {
     }
 
     getChallenges = () => {
-        return GET(this.props.oidc.user.access_token, "/challenges?categories=" + this.getCheckedCategories() + "&difficulties=" + this.getCheckedDifficulties() + "&search=" + this.state.search_query)
+        return GET(this.props.oidc.user.access_token, "/challenges?categories=" + this.getCheckedCategories() + 
+                                                      "&difficulties=" + this.getCheckedDifficulties() + 
+                                                      "&search=" + this.state.search_query +
+                                                      "&sort_by=" + this.state.sort_by +
+                                                      "&order_by=" + this.state.order_by)
         .then(response => response.json())
         .then(jsonresponse => this.setState({
             challenges: jsonresponse
@@ -242,6 +247,16 @@ class Home extends Component {
         }, 350)
     }
 
+    handleSortChange = (e) => {
+        const sortParams = JSON.parse(e.target.value)
+        Promise.all([
+        this.setState({
+            sort_by: sortParams.sort_by,
+            order_by: sortParams.order_by
+        })])
+        .then(() => this.getChallenges())
+    }
+
     render () {
         if (this.state.isLoading) {
             return <Loader loading={this.state.showLoader} />
@@ -268,14 +283,12 @@ class Home extends Component {
                         </Col>
                         <Col lg={{ size: 4, order: 1}} style={{"marginBottom": "12px"}}>
                             <Row>
-                                <StyledList type="select" value={this.state.sort_by} onChange={this.handleChange('sort_by')} style={{"marginBottom": "8px"}}>
-                                    {this.state.sort_by === "" && <option value="" disabled>
+                                <StyledList type="select" value={JSON.stringify({sort_by: this.state.sort_by, order_by: this.state.order_by})} onChange={this.handleSortChange} style={{"marginBottom": "8px"}}>
+                                    {this.state.sort_by === "" && <option value={{}} disabled>
                                         Sort By
                                     </option>}
-                                    <option value="1">Date Added: New to Old</option>
-                                    <option value="2">Date Added: Old to New</option>
-                                    <option value="3">Rating: High to Low</option>
-                                    <option value="4">Rating: Low to High</option>
+                                    <option value={JSON.stringify({sort_by: "ts", order_by: "desc"})}>Date Added: New to Old</option>
+                                    <option value={JSON.stringify({sort_by: "ts", order_by: "asc"})}>Date Added: Old to New</option>
                                 </StyledList>
                             </Row>
                             <Row>
