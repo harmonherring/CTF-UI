@@ -284,7 +284,7 @@ class Home extends Component {
                         <Col lg={{ size: 4, order: 1}} style={{"marginBottom": "12px"}}>
                             <Row>
                                 <StyledList type="select" value={JSON.stringify({sort_by: this.state.sort_by, order_by: this.state.order_by})} onChange={this.handleSortChange} style={{"marginBottom": "8px"}}>
-                                    {this.state.sort_by === "" && <option value={{}} disabled>
+                                    {this.state.sort_by === "" && <option value={JSON.stringify({sort_by: "", order_by: ""})} disabled>
                                         Sort By
                                     </option>}
                                     <option value={JSON.stringify({sort_by: "ts", order_by: "desc"})}>Date Added: New to Old</option>
