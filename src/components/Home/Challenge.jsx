@@ -100,6 +100,7 @@ class Challenge extends Component {
             clicked: false
         }
     }
+
     getCompletedFlags = () => {
         let count = 0
         for (const data of Object.values(this.props.flags)) {
@@ -132,7 +133,10 @@ class Challenge extends Component {
                                     (this.props.admin || this.props.submitter_username === this.props.current_username) && <StyledTrash onClick={() => this.props.deleteChallenge(this.props.id, this.props.title)} />
                                 }
                                 &nbsp; 
-                                <span style={{"color": "#4CAF50"}}>{this.getCompletedFlags()}/{Object.keys(this.props.flags).length} <FaFlag style={{"marginBottom": "5px"}} /></span>
+                                {
+                                    !(this.props.submitter_username === this.props.current_username) && 
+                                    <span style={{"color": "#4CAF50"}}>{this.getCompletedFlags()}/{Object.keys(this.props.flags).length} <FaFlag style={{"marginBottom": "5px"}} /></span>
+                                }
                             </h2>
                         </Col>
                     </Row>

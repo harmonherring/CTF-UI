@@ -303,10 +303,14 @@ class Challenge extends React.Component {
                             <Card>
                                 <CardHeader>
                                     <h2 style={{"marginBottom": "0"}}>
-                                        Flags { this.state.data.submitter === this.state.userinfo.preferred_username || this.state.userinfo.admin ? <StyledPlus size={32} color="#4CAF50" onClick={() => this.showModal("create_flag")} /> : ""}
-                                        <span className="float-right" style={{"color": "#4CAF50"}}>
-                                            {this.state.completed_flags}/{Object.keys(this.state.data.flags).length} <FaFlag style={{"verticalAlign": "top"}} />
-                                        </span>
+                                        Flags { this.state.data.submitter === this.state.userinfo.preferred_username ? <StyledPlus size={32} color="#4CAF50" onClick={() => this.showModal("create_flag")} /> : ""}
+                                        {
+                                            !(this.state.data.submitter === this.state.userinfo.preferred_username) &&
+                                            <span className="float-right" style={{"color": "#4CAF50"}}>
+                                                {this.state.completed_flags}/{Object.keys(this.state.data.flags).length} <FaFlag style={{"verticalAlign": "top"}} />
+                                            </span>
+                                        }
+                                        
                                     </h2>
                                 </CardHeader>
                                 <CardBody>
@@ -361,7 +365,13 @@ class Challenge extends React.Component {
                                     {
                                         Object.entries(this.state.data.flags).map( ([id, flag_data]) => 
                                             <section key={id}>
-                                                <h3>Flag {flag_data.relative_id} <StyledPlus color="#4CAF50" size={26} onClick={() => {this.setState({current_flag_id: flag_data.id}); this.showModal("create_hint")}} /></h3>
+                                                <h3>
+                                                    Flag {flag_data.relative_id} 
+                                                    {
+                                                        (this.state.data.submitter === this.state.userinfo.preferred_username) &&
+                                                        <StyledPlus color="#4CAF50" size={26} onClick={() => {this.setState({current_flag_id: flag_data.id}); this.showModal("create_hint")}} />
+                                                    }
+                                                </h3>
                                                 <Table responsive>
                                                     <thead>
                                                         <tr>
