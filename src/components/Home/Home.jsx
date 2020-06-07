@@ -81,7 +81,10 @@ class Home extends Component {
                 tags: []
             },
             show_modal: "",
-            search_query: ""
+            search_query: "",
+            userinfo: {
+                preferred_username: ""
+            }
         }
     }
 
@@ -92,9 +95,9 @@ class Home extends Component {
             })
         }, 1000)
 
-        this.getCategories()
+        this.getUserInfo()
+        .then(() => this.getCategories())
         .then(() => this.getDifficulties())
-        .then(() => this.getUserInfo())
         .then(() => this.getChallenges())
         .then(() => this.setState({
             isLoading: false
@@ -189,7 +192,7 @@ class Home extends Component {
     }
 
     getUserInfo = () => {
-        GET(this.props.oidc.user.access_token, "/user")
+        return GET(this.props.oidc.user.access_token, "/user")
         .then(response => response.json())
         .then(jsonresponse => this.setState({
             userinfo: jsonresponse
@@ -260,10 +263,10 @@ class Home extends Component {
                         exit={() => {this.getChallenges(); this.closeModal()}}
                     />
                     <Row>
-                        <Col lg={{ size: 4, order: 2}} style={{"margin-bottom": "12px"}}>
+                        <Col lg={{ size: 4, order: 2}} style={{"marginBottom": "12px"}}>
                             <StyledInput placeholder="Search" onChange={this.onSearchChange} />
                         </Col>
-                        <Col lg={{ size: 4, order: 1}} style={{"margin-bottom": "12px"}}>
+                        <Col lg={{ size: 4, order: 1}} style={{"marginBottom": "12px"}}>
                             <Row>
                                 <StyledList type="select" value={this.state.sort_by} onChange={this.handleChange('sort_by')} style={{"marginBottom": "8px"}}>
                                     {this.state.sort_by === "" && <option value="" disabled>
@@ -284,7 +287,7 @@ class Home extends Component {
                                         <DropdownMenu>
                                             {
                                                 Object.keys(this.state.categories).map( ( name ) => 
-                                                    <DropdownItem toggle={false}>
+                                                    <DropdownItem toggle={false} key={name}>
                                                         <Label check>
                                                             <Input type="checkbox" checked={this.state.categories[name].checked} onChange={() => this.toggleCheck("categories", name)} />{' '}
                                                             {capitalize(name)}
@@ -301,7 +304,7 @@ class Home extends Component {
                                         <DropdownMenu>
                                             {
                                                 Object.keys(this.state.difficulties).map( ( name ) => 
-                                                    <DropdownItem toggle={false}>
+                                                    <DropdownItem toggle={false} key={name}>
                                                         <Label check>
                                                             <Input type="checkbox" checked={this.state.difficulties[name].checked} onChange={() => this.toggleCheck("difficulties", name)} />{' '}
                                                             {capitalize(name)}
@@ -320,7 +323,7 @@ class Home extends Component {
                     </Row>
                     {
                         this.state.challenges.map(challenge => 
-                            <Row>
+                            <Row key={challenge.id}>
                                 <Col>
                                     <StyledChallenge 
                                         id={challenge.id}

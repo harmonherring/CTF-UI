@@ -209,16 +209,16 @@ class Admin extends Component {
         else {
             return (
                 <Container>
-                    <Row style={{"margin-bottom": "50px"}}>
+                    <Row style={{"marginBottom": "50px"}}>
                         <Col sm="5">
                             <h1>Categories</h1>
                             <hr />
                             { this.state.categoryDeletionError ? <Alert color="danger">{this.state.categoryDeletionError}</Alert> : "" }
-                            <ListGroup style={{"margin-bottom": "20px"}}>
+                            <ListGroup style={{"marginBottom": "20px"}}>
                                 {
                                     this.state.categories.map(category => 
-                                        <>
-                                            <StyledListItem key={category.name} id={this.deSpace(category.name) + "-popover"} onMouseEnter={() => this.setState({[this.deSpace(category.name) + "-popover"]: true})} onMouseLeave={() => this.setState({[this.deSpace(category.name) + "-popover"]: false})} >
+                                        <React.Fragment key={category.name}>
+                                            <StyledListItem id={this.deSpace(category.name) + "-popover"} onMouseEnter={() => this.setState({[this.deSpace(category.name) + "-popover"]: true})} onMouseLeave={() => this.setState({[this.deSpace(category.name) + "-popover"]: false})} >
                                                 <h5 style={{"margin": 0}}><span className="float-left">{capitalize(category.name)}</span> <span className="float-right"><StyledTrash size={18} onClick={() => this.deleteCategory(category.name)} /> <Badge pill color="primary">{category.count}</Badge></span></h5>
                                             </StyledListItem>
                                             <Popover placement="right" isOpen={this.state[this.deSpace(category.name) + "-popover"]} target={this.deSpace(category.name) + "-popover"}>
@@ -229,7 +229,7 @@ class Admin extends Component {
                                                     {category.description}
                                                 </PopoverBody>
                                             </Popover>
-                                        </>
+                                        </React.Fragment>
                                     )
                                 }
                             </ListGroup>
@@ -238,7 +238,7 @@ class Admin extends Component {
                                     Create Category
                                 </ModalHeader>
                                 <ModalBody>
-                                    <Label for="new_category_name" style={{"margin-bottom": 0}}>Category Name</Label>
+                                    <Label for="new_category_name" style={{"marginBottom": 0}}>Category Name</Label>
                                     <StyledInput id="new_category_name" placeholder="Food" onChange={(e) => this.updateStateObject(e, "new_category", "name")} value={this.state.new_category.name} />
                                     <br />
                                     <Label for="new_category_description">Category Name</Label>
@@ -252,14 +252,14 @@ class Admin extends Component {
                                     <Button color="primary" onClick={() => this.createCategory()}>Create Category</Button>
                                 </ModalFooter>
                             </Modal>
-                            <Button style={{"width": "100%", "margin-bottom": "20px"}} color="primary" onClick={() => this.toggleModal("categoryModal")}>Create Category</Button>
+                            <Button style={{"width": "100%", "marginBottom": "20px"}} color="primary" onClick={() => this.toggleModal("categoryModal")}>Create Category</Button>
                         </Col>
     
                         <Col sm={{size: 5, offset: 2}}>
                             <h1>Difficulties</h1>
                             <hr />
                             { this.state.difficultyDeletionError ? <Alert color="danger">{this.state.difficultyDeletionError}</Alert> : "" }
-                            <ListGroup style={{"margin-bottom": "20px"}}>
+                            <ListGroup style={{"marginBottom": "20px"}}>
                                 {
                                     this.state.difficulties.map(difficulty => 
                                         <StyledListItem key={difficulty.name}>
@@ -283,7 +283,7 @@ class Admin extends Component {
                                     <Button color="primary" onClick={() => this.createDifficulty()}>Create Difficulty</Button>
                                 </ModalFooter>
                             </Modal>
-                            <Button style={{"width": "100%", "margin-bottom": "20px"}} color="primary" onClick={() => this.toggleModal("difficultyModal")}>Create Difficulty</Button>
+                            <Button style={{"width": "100%", "marginBottom": "20px"}} color="primary" onClick={() => this.toggleModal("difficultyModal")}>Create Difficulty</Button>
                         </Col>
                     </Row>
                     <Row>

@@ -189,7 +189,7 @@ class CreateChallengeModal extends React.Component {
         return(
             <Modal size="xl" isOpen={this.props.isOpen} toggle={() => this.props.toggle()}>
                 <ModalHeader toggle={() => this.props.toggle()}>
-                    <h2>Create Challenge</h2>
+                    <span style={{"fontSize": "1.625rem"}}>Create Challenge</span>
                 </ModalHeader>
                 <ModalBody>
                     { this.state.create_challenge_error && <Alert color="danger">{this.state.create_challenge_error}</Alert>}
