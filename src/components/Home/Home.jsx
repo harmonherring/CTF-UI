@@ -68,7 +68,12 @@ class Home extends Component {
     constructor(props) {
         super(props)
 
+        this.canExtend = true
+
         this.state = {
+            page_size: 10,
+            limit: 10,
+            offset: 1,
             isLoading: true,
             showLoader: false,
             sort_by: "",
@@ -85,7 +90,8 @@ class Home extends Component {
             search_query: "",
             userinfo: {
                 preferred_username: ""
-            }
+            },
+            loading_challenges: false
         }
     }
 
@@ -96,6 +102,10 @@ class Home extends Component {
             })
         }, 1000)
 
+        window.addEventListener('scroll', () => {
+            this.handleBottomScroll()
+        })
+
         this.getUserInfo()
         .then(() => this.getCategories())
         .then(() => this.getDifficulties())
@@ -103,6 +113,23 @@ class Home extends Component {
         .then(() => this.setState({
             isLoading: false
         }))
+
+    }
+
+    handleBottomScroll = () => {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && this.canExtend) {
+            if (this.oldScroll < window.scrollY) {
+                this.canExtend = false
+                Promise.all([this.setState({
+                    limit: this.state.limit + this.state.page_size
+                })])
+                .then(() => this.getChallenges())
+                setTimeout(() => {
+                    this.canExtend = true
+                }, 1000)
+            }
+        }
+        this.oldScroll = window.scrollY
     }
 
     showModal = (modal) => {
@@ -128,14 +155,21 @@ class Home extends Component {
     }
 
     getChallenges = () => {
+        this.setState({
+            loading_challenges: true
+        })
+        console.log("GETTING CHALLENGES: OFFSET = " + this.state.offset)
         return GET(this.props.oidc.user.access_token, "/challenges?categories=" + this.getCheckedCategories() + 
                                                       "&difficulties=" + this.getCheckedDifficulties() + 
                                                       "&search=" + this.state.search_query +
                                                       "&sort_by=" + this.state.sort_by +
-                                                      "&order_by=" + this.state.order_by)
+                                                      "&order_by=" + this.state.order_by + 
+                                                      "&limit=" + this.state.limit +
+                                                      "&offset=" + this.state.offset)
         .then(response => response.json())
         .then(jsonresponse => this.setState({
-            challenges: jsonresponse
+            challenges: jsonresponse,
+            loading_challenges: false
         }))
     }
 
@@ -263,7 +297,7 @@ class Home extends Component {
         }
         else {
             return (
-                <Container style={{"marginBottom": "40px"}}>
+                <Container style={{"marginBottom": "40px", "minHeight": window.innerHeight + "px"}}>
                     <CreateChallengeModal 
                         isOpen={this.state.show_modal === "create_challenge"}
                         toggle={this.closeModal} 
@@ -357,6 +391,7 @@ class Home extends Component {
                             </Row>
                         )
                     }
+                    <Loader loading={this.state.loading_challenges} />
                     <Modal isOpen={this.state.show_modal === "deletion_modal"} toggle={this.closeModal}>
                     <ModalHeader toggle={this.closeModal}>Confirm Deletion</ModalHeader>
                     <ModalBody>
