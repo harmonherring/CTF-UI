@@ -29,7 +29,8 @@
     "reactstrap": "^8.4.1",
     "redux": "^4.0.5",
     "redux-oidc": "^3.1.0",
-    "styled-components": "^5.1.1"
+    "styled-components": "^5.1.1",
+    "websocket-extensions": "^0.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
