@@ -223,14 +223,20 @@ class Challenge extends React.Component {
 
     purchaseHint = (hint_id) => {
         POST(this.props.oidc.user.access_token, "/hints/" + hint_id + "/used")
+        .then(response => Promise.all([response.status, response.json()]))
         .then(response => {
-            if (response.status === 201) {
+            if (response[0] === 201) {
                 this.getFlags()
             } else {
                 this.setState({
-                    hint_error: "Unable to purchase hint"
+                    hint_error: response[1].message
                 })
             }
+        })
+        .catch(e => {
+            this.setState({
+                hint_error: "Unable to purchase hint"
+            })
         })
     }
 
