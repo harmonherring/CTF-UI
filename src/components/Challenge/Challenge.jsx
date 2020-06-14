@@ -222,7 +222,7 @@ class Challenge extends React.Component {
     }
 
     purchaseHint = (hint_id) => {
-        POST(this.props.oidc.user.access_token, "/hints/" + hint_id + "/used")
+        POST(this.props.oidc.user.access_token, "/hints/" + hint_id)
         .then(response => Promise.all([response.status, response.json()]))
         .then(response => {
             if (response[0] === 201) {
