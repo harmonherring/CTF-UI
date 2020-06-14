@@ -369,8 +369,8 @@ class Challenge extends React.Component {
                                 <CardBody>
                                     {this.state.hint_error ? <Alert color="danger">{this.state.hint_error}</Alert> : <></>}
                                     {
-                                        Object.entries(this.state.data.flags).map( ([id, flag_data]) => 
-                                            <section key={id}>
+                                        Object.entries(this.state.data.flags).map( ([flag_id, flag_data]) => 
+                                            <section key={flag_id}>
                                                 <h3>
                                                     Flag {flag_data.relative_id} 
                                                     {
@@ -387,12 +387,12 @@ class Challenge extends React.Component {
                                                     </thead>
                                                     <tbody>
                                                         {
-                                                            Object.entries(this.state.data.flags[id].hints).map( ([id, hint_data]) => 
-                                                                <HoverableTr key={id}>
+                                                            Object.entries(this.state.data.flags[flag_id].hints).map( ([hint_id, hint_data]) => 
+                                                                <HoverableTr key={hint_id}>
                                                                     {hint_data.hint ? <td>{hint_data.hint}</td> : <th>NOT PURCHASED</th>}
                                                                     <td className="text-right">
                                                                         {this.state.data.submitter === this.state.userinfo.preferred_username || this.state.userinfo.admin ? <StyledTrash onClick={() => this.deleteHint(hint_data.id)} size={20} /> : <></>} &nbsp;
-                                                                        <Button color="primary" onClick={() => this.purchaseHint(hint_data.id)} disabled={hint_data.hint ? true : false}>{hint_data.cost} Points</Button>
+                                                                        <Button color="primary" onClick={() => this.purchaseHint(hint_data.id)} disabled={hint_data.hint || this.state.data.flags[flag_id].flag ? true : false}>{hint_data.cost} Points</Button>
                                                                     </td>
                                                                 </HoverableTr>
                                                             )
