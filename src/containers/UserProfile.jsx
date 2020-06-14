@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import Profile from '../components/NavBar/Profile'
 
 const mapStateToProps = state => ({
-  name: ((state.oidc.user || {}).profile || {}).name,
+  name: ((state.oidc.user || {}).profile || {}).given_name,
   username: ((state.oidc.user || {}).profile || {}).preferred_username
 })
 

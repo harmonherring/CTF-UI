@@ -19,9 +19,9 @@ class Profile extends React.Component {
   }
 
   render () {
-    if (!this.props.name || !this.props.username) return null
+    if (!this.props.username) return null
 
-    const { name, username } = this.props
+    const { username } = this.props
 
     return (
       <UncontrolledDropdown nav inNavbar>
@@ -34,19 +34,16 @@ class Profile extends React.Component {
             width={32}
             height={32}
           />
-          {name} ({username})
+          {username}
           <span className="caret"/>
         </DropdownToggle>
         <DropdownMenu>
           <DropdownItem>
-                        Dashboard
-          </DropdownItem>
-          <DropdownItem>
-                        Settings
+            <a style={{"textDecoration": "None", "color": "#212121"}} href="https://members.csh.rit.edu">Dashboard</a>
           </DropdownItem>
           <DropdownItem divider/>
           <DropdownItem>
-                        Logout
+            <a style={{"textDecoration": "None", "color": "#212121"}} href="https://members.csh.rit.edu/sso/logout">Logout</a>
           </DropdownItem>
         </DropdownMenu>
       </UncontrolledDropdown>
@@ -55,7 +52,6 @@ class Profile extends React.Component {
 }
 
 Profile.propTypes = {
-  name: PropTypes.string,
   username: PropTypes.string
 }
 
