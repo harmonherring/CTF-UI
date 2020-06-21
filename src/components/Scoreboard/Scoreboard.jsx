@@ -104,12 +104,14 @@ class Scoreboard extends React.Component {
                                     {
                                         label: 'Score',
                                         backgroundColor: 'rgb(176, 25, 126)',
+                                        hoverBackgroundColor: 'rgb(125, 0, 101)',
                                         yAxisID: 'Score',
                                         data: this.state.scores.slice(0, 10).map(key => key.score)
                                     },
                                     {
                                         label: 'Flags',
                                         backgroundColor: 'rgb(225, 28, 82)',
+                                        hoverBackgroundColor: 'rgb(187, 2, 44)',
                                         yAxisID: 'Flags',
                                         data: this.state.scores.slice(0, 10).map(key => key.solved_flags)
                                     }
