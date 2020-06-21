@@ -10,7 +10,8 @@ import {
   Home,
   NavBar,
   Admin,
-  Challenge
+  Challenge,
+  Scoreboard
 } from './index'
 import { GET } from '../actions'
 
@@ -47,6 +48,7 @@ class App extends Component {
               <ProtectedRoute exact path="/" component={Home}/>
               <ProtectedRoute exact path="/admin" component={Admin} />
               <ProtectedRoute exact path="/challenge/:challenge_id" component={Challenge} />
+              <ProtectedRoute exact path="/scoreboard" component={Scoreboard} />
             </Switch>
           </Container>
         </Container>

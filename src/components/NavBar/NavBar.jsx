@@ -33,6 +33,9 @@ class NavBar extends React.Component {
                 <NavItem>
                   <NavLink to="/" className={'nav-link'}>Home</NavLink>
                 </NavItem>
+                <NavItem>
+                  <NavLink to="/scoreboard" className={'nav-link'}>Scoreboard</NavLink>
+                </NavItem>
                 { this.props.admin && <NavItem><NavLink to="/admin" className={'nav-link'}>Admin</NavLink></NavItem> }
               </Nav>
               <Nav navbar className="ml-auto">

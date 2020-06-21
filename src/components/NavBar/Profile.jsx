@@ -39,7 +39,7 @@ class Profile extends React.Component {
         </DropdownToggle>
         <DropdownMenu>
           <DropdownItem>
-            <a style={{"textDecoration": "None", "color": "#212121"}} href="https://members.csh.rit.edu">Dashboard</a>
+            <a style={{"textDecoration": "None", "color": "#212121"}} href="https://members.csh.rit.edu">Members Dashboard</a>
           </DropdownItem>
           <DropdownItem divider/>
           <DropdownItem>
