@@ -91,7 +91,8 @@ class Home extends Component {
             userinfo: {
                 preferred_username: ""
             },
-            loading_challenges: false
+            loading_challenges: false,
+            endMessage: ""
         }
     }
 
@@ -158,7 +159,6 @@ class Home extends Component {
         this.setState({
             loading_challenges: true
         })
-        console.log("GETTING CHALLENGES: OFFSET = " + this.state.offset)
         return GET(this.props.oidc.user.access_token, "/challenges?categories=" + this.getCheckedCategories() + 
                                                       "&difficulties=" + this.getCheckedDifficulties() + 
                                                       "&search=" + this.state.search_query +
@@ -167,10 +167,18 @@ class Home extends Component {
                                                       "&limit=" + this.state.limit +
                                                       "&offset=" + this.state.offset)
         .then(response => response.json())
-        .then(jsonresponse => this.setState({
-            challenges: jsonresponse,
-            loading_challenges: false
-        }))
+        .then(jsonresponse => {
+            if (jsonresponse.length < this.state.limit) {
+                this.canExtend = false
+                this.setState({
+                    endMessage: "EL FIN"
+                })
+            }
+            this.setState({
+                challenges: jsonresponse,
+                loading_challenges: false
+            })
+        })
     }
 
     getCategories = () => {
@@ -392,6 +400,7 @@ class Home extends Component {
                         )
                     }
                     <Loader loading={this.state.loading_challenges} />
+                    <h4 style={{"margin": "40px 0", "textAlign": "center"}}>{ this.state.endMessage }</h4>
                     <Modal isOpen={this.state.show_modal === "deletion_modal"} toggle={this.closeModal}>
                     <ModalHeader toggle={this.closeModal}>Confirm Deletion</ModalHeader>
                     <ModalBody>
