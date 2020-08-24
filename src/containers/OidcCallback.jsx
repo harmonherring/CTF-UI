@@ -8,7 +8,12 @@ import userManager from '../userManager'
 class OidcCallback extends React.Component {
   constructor (props) {
     super(props)
-    const ctfRedirect = new URLSearchParams(this.props.location.search).get('ctf_redirect')
+    let ctfRedirect = new URLSearchParams(this.props.location.search).get('ctf_redirect')
+
+    // Don't redirect to the callback page
+    if (ctfRedirect === '/callback') {
+      ctfRedirect = '/'
+    }
 
     this.state = {
       redirect: ctfRedirect
