@@ -92,7 +92,6 @@ class Home extends Component {
                 preferred_username: ""
             },
             loading_challenges: false,
-            endMessage: ""
         }
     }
 
@@ -170,9 +169,6 @@ class Home extends Component {
         .then(jsonresponse => {
             if (jsonresponse.length < this.state.limit) {
                 this.canExtend = false
-                this.setState({
-                    endMessage: "EL FIN"
-                })
             }
             this.setState({
                 challenges: jsonresponse,
@@ -400,7 +396,6 @@ class Home extends Component {
                         )
                     }
                     <Loader loading={this.state.loading_challenges} />
-                    <h4 style={{"margin": "40px 0", "textAlign": "center"}}>{ this.state.endMessage }</h4>
                     <Modal isOpen={this.state.show_modal === "deletion_modal"} toggle={this.closeModal}>
                     <ModalHeader toggle={this.closeModal}>Confirm Deletion</ModalHeader>
                     <ModalBody>
