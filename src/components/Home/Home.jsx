@@ -9,7 +9,9 @@ import { GET, DELETE } from '../../actions'
 import { FaRegEdit } from 'react-icons/fa'
 import { capitalize } from '../../utils'
 import CreateChallengeModal from './CreateChallengeModal'
-import CreateSuccessModal from './CreateSuccessModal'
+import { SHOW_MODAL } from '../../constants'
+import store from '../../store'
+import ModalRoot from '../Modals/ModalRoot'
 
 const StyledChallenge = styled(Challenge)`
     box-shadow 0 1px 4px rgba(0, 0, 0, 0.4);
@@ -302,18 +304,25 @@ class Home extends Component {
         else {
             return (
                 <Container style={{"marginBottom": "40px", "minHeight": window.innerHeight + "px"}}>
+                    <ModalRoot />
                     <CreateChallengeModal 
                         isOpen={this.state.show_modal === "create_challenge"}
                         toggle={this.closeModal} 
                         categories={this.state.categories} 
                         difficulties={this.state.difficulties}
                         current_username={this.state.userinfo.preferred_username}
-                        successCallback={() => this.showModal("create_success")}
-                    />
-                    <CreateSuccessModal 
-                        isOpen={this.state.show_modal === "create_success"}
-                        toggle={this.closeModal}
-                        exit={() => {this.getChallenges(); this.closeModal()}}
+                        successCallback={() => {
+                            this.closeModal()
+                            store.dispatch({
+                                type: SHOW_MODAL,
+                                modal: {
+                                    type: 'GenericModal',
+                                    title: 'Success',
+                                    text: 'Your challenge was successfully submitted. Once it\'s been moved to permanent storage it will become available. Thanks!',
+                                    exitCallback: this.getChallenges
+                                }
+                            })}
+                        }
                     />
                     <Row>
                         <Col lg={{ size: 4, order: 2}} style={{"marginBottom": "12px"}}>
