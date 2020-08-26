@@ -28,9 +28,9 @@ function modalReducer (state = {
 action) {
   switch (action.type) {
     case SHOW_MODAL:
-      return Object.assign({}, { ...state }, { ...action.modal })
+      return Object.assign({}, { ...state }, { ...action.modal, visible: true })
     case HIDE_MODAL:
-      return Object.assign({}, { ...state }, { type: '' })
+      return Object.assign({}, { ...state }, { visible: false })
     default:
       return state
   }

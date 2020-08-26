@@ -12,7 +12,7 @@ const ModalRoot = ({ modal }) => {
     const SpecificModal = MODAL_COMPONENTS[modal.type]
 
     return <SpecificModal
-                        visible={!!modal.type}
+                        visible={modal.visible}
                         title={modal.title}
                         text={modal.text}
                         successButtonText={modal.successButtonText}
