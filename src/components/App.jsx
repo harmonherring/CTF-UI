@@ -14,6 +14,7 @@ import {
   Scoreboard
 } from './index'
 import { GET } from '../actions'
+import ModalRoot from './Modals/ModalRoot'
 
 class App extends Component {
   constructor (props) {
@@ -43,6 +44,7 @@ class App extends Component {
         <Container className="main" fluid>
           <NavBar admin={this.state.admin} />
           <Container>
+            <ModalRoot />
             <Switch>
               <Route exact path="/callback" component={OidcCallback}/>
               <ProtectedRoute exact path="/" component={Home}/>

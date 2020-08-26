@@ -11,7 +11,6 @@ import { capitalize } from '../../utils'
 import CreateChallengeModal from './CreateChallengeModal'
 import { SHOW_MODAL } from '../../constants'
 import store from '../../store'
-import ModalRoot from '../Modals/ModalRoot'
 
 const StyledChallenge = styled(Challenge)`
     box-shadow 0 1px 4px rgba(0, 0, 0, 0.4);
@@ -304,7 +303,6 @@ class Home extends Component {
         else {
             return (
                 <Container style={{"marginBottom": "40px", "minHeight": window.innerHeight + "px"}}>
-                    <ModalRoot />
                     <CreateChallengeModal 
                         isOpen={this.state.show_modal === "create_challenge"}
                         toggle={this.closeModal} 
