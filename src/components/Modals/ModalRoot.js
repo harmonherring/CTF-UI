@@ -15,8 +15,9 @@ const ModalRoot = ({ modal }) => {
                         visible={modal.visible}
                         title={modal.title}
                         text={modal.text}
-                        successButtonText={modal.successButtonText}
-                        successButtonCallback={modal.successButtonCallback} />
+                        actionButtonText={modal.actionButtonText}
+                        actionButtonCallback={modal.actionButtonCallback}
+                        exitCallback={modal.exitCallback} />
 }
 
 const mapState = state => ({
