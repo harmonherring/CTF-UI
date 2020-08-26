@@ -88,6 +88,7 @@ const Overlay = styled.div`
 `;
 
 const OverflowContainer = styled.div`
+    cursor: pointer !important;
     max-height: ${props => props.clicked ? "none !important" : "10rem !important"};
     overflow: hidden;
 `;
@@ -141,7 +142,7 @@ class Challenge extends Component {
                         </Col>
                     </Row>
                     <hr />
-                    <OverflowContainer clicked={this.state.clicked}>
+                    <OverflowContainer onClick={() => this.setState({clicked: true})} clicked={this.state.clicked}>
                         <ReactMarkdown renderers={{ code: CodeBlock }} source={this.props.description} escapeHtml={true} />
                         <Overlay onClick={() => this.setState({clicked: true})} clicked={this.state.clicked}><FaAngleDown style={{"bottom": "0", "position": "absolute"}} size={30} /></Overlay>
                     </OverflowContainer>
