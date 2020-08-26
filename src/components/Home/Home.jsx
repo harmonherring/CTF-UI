@@ -1,7 +1,17 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Container, Row, Col, Input, UncontrolledButtonDropdown, DropdownItem, DropdownToggle, DropdownMenu, Label, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import {
+    Container,
+    Row,
+    Col,
+    Input,
+    UncontrolledButtonDropdown,
+    DropdownItem,
+    DropdownToggle,
+    DropdownMenu,
+    Label,
+    Button } from 'reactstrap'
 import Challenge from './Challenge'
 import styled from 'styled-components'
 import { Loader } from '../'
@@ -9,7 +19,7 @@ import { GET, DELETE } from '../../actions'
 import { FaRegEdit } from 'react-icons/fa'
 import { capitalize } from '../../utils'
 import CreateChallengeModal from './CreateChallengeModal'
-import { SHOW_MODAL } from '../../constants'
+import { SHOW_MODAL, HIDE_MODAL } from '../../constants'
 import store from '../../store'
 
 const StyledChallenge = styled(Challenge)`
@@ -87,12 +97,12 @@ class Home extends Component {
             new_challenge: {
                 tags: []
             },
-            show_modal: "",
             search_query: "",
             userinfo: {
                 preferred_username: ""
             },
             loading_challenges: false,
+            showCreateChallengeModal: false,
         }
     }
 
@@ -107,6 +117,7 @@ class Home extends Component {
             this.handleBottomScroll()
         })
 
+        // TODO: Remove userinfo query once 'ctf_admin' becomes an actual role
         this.getUserInfo()
         .then(() => this.getCategories())
         .then(() => this.getDifficulties())
@@ -133,25 +144,9 @@ class Home extends Component {
         this.oldScroll = window.scrollY
     }
 
-    showModal = (modal) => {
+    toggleCreateChallengeModal = () => {
         this.setState({
-            show_modal: modal
-        })
-    }
-
-    closeModal = () => {
-        this.setState({
-            show_modal: ""
-        })
-    }
-
-    getDataForRender = (data) => {
-        return Promise.all([this.getChallenges(), this.getCategories(), this.getDifficulties()]) 
-    }
-
-    handleChange = (field) => e => {
-        this.setState({
-            [field]: e.target.value
+            showCreateChallengeModal: !this.state.showCreateChallengeModal
         })
     }
 
@@ -250,11 +245,17 @@ class Home extends Component {
     }
 
     toggleDeleteModal = (id, title) => {
-        this.setState({
-            deleteChallengeId: id,
-            deleteChallengeTitle: title
+        store.dispatch({
+            type: SHOW_MODAL,
+            modal: {
+                type: 'GenericModal',
+                title: 'Confirm Deletion',
+                text: `Confirm deletion of Challenge "${title}"`,
+                exitButtonText: 'Cancel',
+                actionButtonText: 'Delete',
+                actionButtonCallback: () => this.deleteChallenge(id)
+            }
         })
-        this.showModal("deletion_modal")
     }
 
     deleteChallenge = (challenge_id) => {
@@ -262,17 +263,17 @@ class Home extends Component {
         .then(response => Promise.all([response.status, response.json()]))
         .then(response => {
                 if (response[0] === 200) {
-                        this.getChallenges()
+                    this.setState({
+                        challenges: this.state.challenges.filter(challenge => challenge.id !== challenge_id)
+                    })
                 } else {
-                        this.setError("Unable to delete challenge")
+                    this.setError("Unable to delete challenge")
                 }
         })
         .then(() => {
-            if (this.state.show_modal) {
-                this.setState({
-                    show_modal: ""
-                })
-            }
+            store.dispatch({
+                type: HIDE_MODAL
+            })
         })
     }
 
@@ -304,13 +305,14 @@ class Home extends Component {
             return (
                 <Container style={{"marginBottom": "40px", "minHeight": window.innerHeight + "px"}}>
                     <CreateChallengeModal 
-                        isOpen={this.state.show_modal === "create_challenge"}
-                        toggle={this.closeModal} 
+                        isOpen={this.state.showCreateChallengeModal}
+                        toggle={this.toggleCreateChallengeModal} 
                         categories={this.state.categories} 
                         difficulties={this.state.difficulties}
                         current_username={this.state.userinfo.preferred_username}
+                        // TODO: Implement SocketIO, give user popup that new challenge was added, allow them to reload
                         successCallback={() => {
-                            this.closeModal()
+                            this.toggleCreateChallengeModal()
                             store.dispatch({
                                 type: SHOW_MODAL,
                                 modal: {
@@ -318,7 +320,6 @@ class Home extends Component {
                                     title: 'Success',
                                     text: 'Your challenge was successfully submitted. Once it\'s been moved to permanent storage it will become available. Thanks!',
                                     exitButtonText: 'Close',
-                                    exitCallback: this.getChallenges
                                 }
                             })}
                         }
@@ -377,7 +378,7 @@ class Home extends Component {
                             </Row>
                         </Col>
                         <Col lg={{ size: 4, order: 3}} style={{"marginBottom": "12px"}}>
-                            <UploadButton onClick={() => this.showModal("create_challenge")} color="primary" size="lg" className="float-lg-right">Create <FaRegEdit style={{"marginBottom": "5px"}} size={20} /></UploadButton>
+                            <UploadButton onClick={() => this.toggleCreateChallengeModal()} color="primary" size="lg" className="float-lg-right">Create <FaRegEdit style={{"marginBottom": "5px"}} size={20} /></UploadButton>
                         </Col>
                     </Row>
                     {
@@ -404,16 +405,6 @@ class Home extends Component {
                         )
                     }
                     <Loader loading={this.state.loading_challenges} />
-                    <Modal isOpen={this.state.show_modal === "deletion_modal"} toggle={this.closeModal}>
-                    <ModalHeader toggle={this.closeModal}>Confirm Deletion</ModalHeader>
-                    <ModalBody>
-                        Confirm deletion of Challenge {this.state.deleteChallengeTitle}
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="primary" onClick={() => this.deleteChallenge(this.state.deleteChallengeId)}>Delete</Button>
-                        <Button color="secondary" onClick={this.closeModal}>Cancel</Button>
-                    </ModalFooter>
-                </Modal>
                 </Container>
             );
         }
