@@ -8,8 +8,9 @@ import {
     ModalFooter,
     Button
 } from 'reactstrap'
+import { connect } from 'react-redux'
 
-export default class GenericModal extends React.Component {
+class GenericModal extends React.Component {
     exitCallback = () => {
         store.dispatch({
             type: HIDE_MODAL
@@ -29,11 +30,17 @@ export default class GenericModal extends React.Component {
                     { this.props.text }
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="secondary" onClick={() => store.dispatch({ type: HIDE_MODAL })}>Cancel</Button>{' '}
+                    <Button color="secondary" onClick={() => store.dispatch({ type: HIDE_MODAL })}>{ this.props.exitButtonText }</Button>
                     { this.props.actionButtonCallback && this.props.actionButtonText
-                        ? <Button color="primary" onClick={() => this.props.actionButtonCallback()}>{this.props.actionButtonText}</Button> : '' }
+                        && <Button color="primary" onClick={() => this.props.actionButtonCallback()}>{this.props.actionButtonText}</Button> }
                 </ModalFooter>
             </Modal>
         )
     }
 }
+
+const mapStateToProps = state => ({
+    ...state.modal
+})
+
+export default connect(mapStateToProps)(GenericModal)

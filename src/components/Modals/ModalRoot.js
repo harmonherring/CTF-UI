@@ -6,22 +6,16 @@ const MODAL_COMPONENTS = {
     'GenericModal': GenericModal
 }
 
-const ModalRoot = ({ modal }) => {
-    if (!modal.type || !MODAL_COMPONENTS[modal.type]) return null
+const ModalRoot = ({ modalType }) => {
+    if (!modalType || !MODAL_COMPONENTS[modalType]) return null
 
-    const SpecificModal = MODAL_COMPONENTS[modal.type]
+    const SpecificModal = MODAL_COMPONENTS[modalType]
 
-    return <SpecificModal
-                        visible={modal.visible}
-                        title={modal.title}
-                        text={modal.text}
-                        actionButtonText={modal.actionButtonText}
-                        actionButtonCallback={modal.actionButtonCallback}
-                        exitCallback={modal.exitCallback} />
+    return <SpecificModal />
 }
 
 const mapState = state => ({
-    modal: state.modal
+    modalType: state.modal.type
 })
 
 export default connect(mapState)(ModalRoot)

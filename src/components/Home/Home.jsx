@@ -317,6 +317,7 @@ class Home extends Component {
                                     type: 'GenericModal',
                                     title: 'Success',
                                     text: 'Your challenge was successfully submitted. Once it\'s been moved to permanent storage it will become available. Thanks!',
+                                    exitButtonText: 'Close',
                                     exitCallback: this.getChallenges
                                 }
                             })}

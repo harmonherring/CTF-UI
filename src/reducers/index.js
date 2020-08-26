@@ -22,7 +22,9 @@ function modalReducer (state = {
     text: '',
     title: '',
     continueButtonText: '',
-    continueButtonCallback: null
+    continueButtonCallback: null,
+    exitButtonText: '',
+    exitCallback: null
   }
 },
 action) {
