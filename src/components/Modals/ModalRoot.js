@@ -1,10 +1,9 @@
-import ConfirmationModal from './ConfirmationModal'
-import { renderToString } from 'react-dom/server'
+import GenericModal from './GenericModal'
 import { connect } from 'react-redux'
 import React from 'react'
 
 const MODAL_COMPONENTS = { 
-    'ConfirmationModal': ConfirmationModal 
+    'GenericModal': GenericModal
 }
 
 const ModalRoot = ({ modal }) => {
@@ -12,7 +11,12 @@ const ModalRoot = ({ modal }) => {
 
     const SpecificModal = MODAL_COMPONENTS[modal.type]
 
-    return <SpecificModal visible={!!modal.type} title={modal.title} text={modal.text} successButtonText={modal.successButtonText} successButtonCallback={modal.successButtonCallback} />
+    return <SpecificModal
+                        visible={!!modal.type}
+                        title={modal.title}
+                        text={modal.text}
+                        successButtonText={modal.successButtonText}
+                        successButtonCallback={modal.successButtonCallback} />
 }
 
 const mapState = state => ({

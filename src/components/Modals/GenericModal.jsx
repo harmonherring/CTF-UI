@@ -9,7 +9,7 @@ import {
     Button
 } from 'reactstrap'
 
-export default class ConfirmationModal extends React.Component {
+export default class GenericModal extends React.Component {
     render() {
         return (
             <Modal isOpen={this.props.visible} toggle={() => store.dispatch({ type: HIDE_MODAL })}>
