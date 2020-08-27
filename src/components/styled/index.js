@@ -2,7 +2,8 @@ import styled from 'styled-components'
 import { FaRegTrashAlt } from 'react-icons/fa'
 import {
     Input,
-    ListGroupItem
+    ListGroupItem,
+    Button
 } from 'reactstrap'
 
 export const StyledInput = styled(Input)`
@@ -97,4 +98,53 @@ export const OverflowContainer = styled.div`
     cursor: ${props => props.clicked ? "inherit" : "pointer !important"};
     max-height: ${props => props.clicked ? "none !important" : "10rem !important"};
     overflow: hidden;
+`
+
+export const StyledSearchInput = styled(Input)`
+    background: #FFF;
+    height: calc(1em + 1.2rem + 2px) !important;
+    border-radius: .2rem;
+    padding-left: 5px !important;
+    box-shadow: none !important;
+    border: 1px solid #DDD !important;
+
+    :focus {
+        background: #FFF;
+        border: 1px solid #B0197E !important;
+        box-shadow: 0 0 0 0.2rem rgba(176, 25, 126, 0.25) !important;
+    }
+`
+
+export const StyledList = styled(Input)`
+    background: #FFF;
+    height: calc(1em + 1.2rem + 2px) !important;
+    padding: 0.1rem 0.1rem 0.1rem 0.4rem !important;
+    box-shadow: none !important;
+    border: 1px solid #DDD !important;
+    border-radius: .2rem !important;
+    width: 72%;
+
+    :focus {
+        background-color: #FFF;
+        border: 1px solid #B0197E !important;
+        box-shadow: 0 0 0 0.2rem rgba(176, 25, 126, 0.25) !important;
+    }
+
+    @media (max-width: 991.98px) {
+        margin: 0 auto;
+    }
+`
+
+export const UploadButton = styled(Button)`
+    @media (max-width: 991.98px) {
+        margin: 0 auto;
+        display: block;
+    }
+`
+
+export const LgCentered = styled.div`
+    @media (max-width: 991.98px) {
+        margin: 0 auto;
+        display: block;
+    }
 `

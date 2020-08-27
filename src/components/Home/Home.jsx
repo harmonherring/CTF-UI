@@ -1,17 +1,6 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import {
-    Container,
-    Row,
-    Col,
-    Input,
-    UncontrolledButtonDropdown,
-    DropdownItem,
-    DropdownToggle,
-    DropdownMenu,
-    Label,
-    Button } from 'reactstrap'
 import Challenge from './Challenge'
 import styled from 'styled-components'
 import { Loader } from '../'
@@ -21,61 +10,28 @@ import { capitalize } from '../../utils'
 import CreateChallengeModal from './CreateChallengeModal'
 import { SHOW_MODAL, HIDE_MODAL } from '../../constants'
 import store from '../../store'
+import {
+    Container,
+    Row,
+    Col,
+    Input,
+    UncontrolledButtonDropdown,
+    DropdownItem,
+    DropdownToggle,
+    DropdownMenu,
+    Label } from 'reactstrap'
+import {
+    StyledInput,
+    StyledList,
+    LgCentered,
+    UploadButton
+} from '../styled'
 
-const StyledChallenge = styled(Challenge)`
+export const StyledChallenge = styled(Challenge)`
     box-shadow 0 1px 4px rgba(0, 0, 0, 0.4);
 `;
 
-const StyledInput = styled(Input)`
-    background: #FFF;
-    height: calc(1em + 1.2rem + 2px) !important;
-    border-radius: .2rem;
-    padding-left: 5px !important;
-    box-shadow: none !important;
-    border: 1px solid #DDD !important;
-
-    :focus {
-        background: #FFF;
-        border: 1px solid #B0197E !important;
-        box-shadow: 0 0 0 0.2rem rgba(176, 25, 126, 0.25) !important;
-    }
-`;
-
-const StyledList = styled(Input)`
-    background: #FFF;
-    height: calc(1em + 1.2rem + 2px) !important;
-    padding: 0.1rem 0.1rem 0.1rem 0.4rem !important;
-    box-shadow: none !important;
-    border: 1px solid #DDD !important;
-    border-radius: .2rem !important;
-    width: 72%;
-
-    :focus {
-        background-color: #FFF;
-        border: 1px solid #B0197E !important;
-        box-shadow: 0 0 0 0.2rem rgba(176, 25, 126, 0.25) !important;
-    }
-
-    @media (max-width: 991.98px) {
-        margin: 0 auto;
-    }
-`;
-
-const UploadButton = styled(Button)`
-    @media (max-width: 991.98px) {
-        margin: 0 auto;
-        display: block;
-    }
-`;
-
-const LgCentered = styled.div`
-    @media (max-width: 991.98px) {
-        margin: 0 auto;
-        display: block;
-    }
-`;
-
-class Home extends Component {
+class Home extends React.Component {
     constructor(props) {
         super(props)
 
