@@ -3,10 +3,10 @@ export { default as POST } from './post'
 export { default as PUT } from './put'
 export { default as DELETE } from './delete'
 export {
-    decrementLoading,
-    incrementLoading,
-    setCategories,
-    setDifficulties } from './reducerActions'
+  decrementLoading,
+  incrementLoading,
+  setCategories,
+  setDifficulties } from './reducerActions'
 export {
-    getDifficulties,
-    getCategories } from './api'
+  getDifficulties,
+  getCategories } from './api'

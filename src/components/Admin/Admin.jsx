@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Container, Row, Col } from 'reactstrap';
-import { GET, incrementLoading, decrementLoading } from '../../actions';
+import { GET } from '../../actions';
 import { Redirect } from 'react-router';
 import { Loader } from '../'
 import Categories from './Categories'

@@ -19,7 +19,7 @@ import { GET, DELETE } from '../../actions'
 import { FaRegEdit } from 'react-icons/fa'
 import { capitalize } from '../../utils'
 import CreateChallengeModal from './CreateChallengeModal'
-import { SHOW_MODAL, HIDE_MODAL, INCREMENT_LOADING } from '../../constants'
+import { SHOW_MODAL, HIDE_MODAL } from '../../constants'
 import store from '../../store'
 
 const StyledChallenge = styled(Challenge)`
