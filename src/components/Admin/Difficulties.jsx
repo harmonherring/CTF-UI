@@ -17,7 +17,7 @@ import {
     StyledListItem
 } from '../styled'
 import { capitalize } from '../../utils'
-import { DELETE, POST, GET } from '../../actions'
+import { DELETE, POST, getDifficulties } from '../../actions'
 
 class Difficulties extends React.Component {
     constructor(props) {
@@ -34,10 +34,6 @@ class Difficulties extends React.Component {
         }
     }
 
-    componentDidMount = () => {
-        this.getDifficulties()
-    }
-
     toggleModal = () => {
         this.setState({
             modal: !this.state.modal,
@@ -47,7 +43,7 @@ class Difficulties extends React.Component {
 
     createDifficulty = () => {
         this.setState({
-            "error": ""
+            creationError: ''
         });
 
         POST(this.props.oidc.user.access_token, '/difficulties', {
@@ -57,34 +53,38 @@ class Difficulties extends React.Component {
         .then(response => {
             if (response[0] === 201) {
                 this.toggleModal("difficultyModal");
-                this.getDifficulties();
+                getDifficulties();
             } else {
-                this.setState({error: response[1].message ? response[1] : "Something is wrong"});
+                this.setState({
+                    creationError: response[1].message ? response[1].message : "Something is wrong"
+                });
             }
         });
     }
 
     deleteDifficulty = ( difficultyName ) => {
         this.setState({
-            difficultyDeletionError: ""
+            deletionError: ''
         });
         DELETE(this.props.oidc.user.access_token, "/difficulties/" + difficultyName, {})
         .then(response => Promise.all([response.status, response.json()]))
         .then(response => {
             if (response[0] === 200) {
-                this.getDifficulties();
+                getDifficulties();
             } else {
                 this.setState({
-                    difficultyDeletionError: response[1].message
+                    deletionError: response[1].message
                 });
             }
         })
     }
 
-    getDifficulties = () => {
-        return GET(this.props.oidc.user.access_token, '/difficulties')
-        .then(response => response.json())
-        .then(jsonresponse => this.setState({difficulties: jsonresponse}));
+    updateStateObject = (event, object, parameter) => {
+        let new_object = this.state[object]
+        new_object[parameter] = event.target.value
+        this.setState({
+            [object]: new_object
+        });
     }
 
     render() {
@@ -92,10 +92,10 @@ class Difficulties extends React.Component {
             <>
                 <h1>Difficulties</h1>
                 <hr />
-                { this.state.error ? <Alert color="danger">{this.state.error}</Alert> : "" }
+                { this.state.deletionError ? <Alert color="danger">{this.state.deletionError}</Alert> : "" }
                 <ListGroup style={{"marginBottom": "20px"}}>
                     {
-                        this.state.difficulties.map(difficulty => 
+                        this.props.difficulties.map(difficulty => 
                             <StyledListItem key={difficulty.name}>
                                 <h5 style={{"margin": 0}}><span className="float-left">{capitalize(difficulty.name)}</span><span className="float-right"><StyledTrash size={18} onClick={() => this.deleteDifficulty(difficulty.name)} /> <Badge pill color="primary">{difficulty.count}</Badge></span></h5>
                             </StyledListItem>
@@ -108,7 +108,7 @@ class Difficulties extends React.Component {
                     </ModalHeader>
                     <ModalBody>
                         {
-                            this.state.error ? <Alert color="danger">{this.state.error}</Alert> : <span></span>
+                            this.state.creationError && <Alert color="danger">{this.state.creationError}</Alert>
                         }
                         <Label for="new_difficulty_name">Difficulty Name</Label>
                         <StyledInput id="new_difficulty_name" placeholder="Easy Peasy" onChange={(e) => this.updateStateObject(e, "new_difficulty", "name")} value={this.state.new_difficulty.name} />
@@ -124,7 +124,8 @@ class Difficulties extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    oidc: state.oidc
+    oidc: state.oidc,
+    difficulties: state.ctf.difficulties
 })
 
 export default connect(mapStateToProps)(Difficulties)

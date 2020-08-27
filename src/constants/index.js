@@ -1,2 +1,6 @@
 export const SHOW_MODAL = 'ctf/SHOW_MODAL'
 export const HIDE_MODAL = 'ctf/HIDE_MODAL'
+export const INCREMENT_LOADING = 'ctf/INCREMENT_LOADING'
+export const DECREMENT_LOADING = 'ctf/DECREMENT_LOADING'
+export const SET_CATEGORIES = 'ctf/SET_CATEGORIES'
+export const SET_DIFFICULTIES = 'ctf/SET_DIFFICULTIES'

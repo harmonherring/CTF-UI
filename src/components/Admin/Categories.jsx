@@ -21,16 +21,20 @@ import {
     StyledInput
 } from '../styled'
 import { remove_spaces, capitalize } from '../../utils'
-import { GET, POST, DELETE } from '../../actions'
+import { POST, DELETE } from '../../actions'
+import {
+    getCategories
+} from '../../actions'
 
 class Categories extends React.Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            categories: [],
             modal: false,
             backdrop: false,
+            creationError: '',
+            deletionError: '',
             new_category: {
                 name: '',
                 description: '',
@@ -39,21 +43,11 @@ class Categories extends React.Component {
         }
     }
 
-    componentDidMount = () => {
-        this.getCategories()
-    }
-
     toggleModal = () => {
         this.setState({
             modal: !this.state.modal,
             backdrop: !this.state.backdrop
         });
-    }
-
-    getCategories = () => {
-        return GET(this.props.oidc.user.access_token, '/categories')
-        .then(response => response.json())
-        .then(jsonresponse => this.setState({categories: jsonresponse}));
     }
     
     updateStateObject = (event, object, parameter) => {
@@ -66,7 +60,7 @@ class Categories extends React.Component {
     
     createCategory = () => {
         this.setState({
-            error: ""
+            error: ''
         });
 
         POST(this.props.oidc.user.access_token, '/categories', {
@@ -75,26 +69,28 @@ class Categories extends React.Component {
         .then(response => Promise.all([response.status, response.json()]))
         .then(response => {
             if (response[0] === 201) {
-                this.toggleModal("categoryModal");
-                this.getCategories();
+                this.toggleModal()
+                getCategories()
             } else {
-                this.setState({error: response[1].message ? response[1] : "Something is wrong"});
+                this.setState({
+                    creationError: response[1].message ? response[1].message : "Something is wrong"
+                })
             }
         });
     }
 
     deleteCategory = ( categoryName ) => {
         this.setState({
-            categoryDeletionError: ""
+            deletionError: ''
         })
         DELETE(this.props.oidc.user.access_token, "/categories/" + categoryName, {})
         .then(response => Promise.all([response.status, response.json()]))
         .then(response => {
             if (response[0] === 200) {
-                this.getCategories();
+                getCategories();
             } else {
                 this.setState({
-                    categoryDeletionError: response[1].message
+                    deletionError: response[1].message
                 });
             }
         })
@@ -114,10 +110,10 @@ class Categories extends React.Component {
             <>
                 <h1>Categories</h1>
                 <hr />
-                { this.state.categoryDeletionError ? <Alert color="danger">{this.state.categoryDeletionError}</Alert> : "" }
+                { this.state.deletionError && <Alert color="danger">{this.state.deletionError}</Alert> }
                 <ListGroup style={{"marginBottom": "20px"}}>
                     {
-                        this.state.categories.map(category => 
+                        this.props.categories.map(category => 
                             <React.Fragment key={category.name}>
                                 <StyledListItem id={remove_spaces(category.name) + "-popover"} onMouseEnter={() => this.setState({[remove_spaces(category.name) + "-popover"]: true})} onMouseLeave={() => this.setState({[remove_spaces(category.name) + "-popover"]: false})} >
                                     <h5 style={{"margin": 0}}><span className="float-left">{capitalize(category.name)}</span> <span className="float-right"><StyledTrash size={18} onClick={() => this.deleteCategory(category.name)} /> <Badge pill color="primary">{category.count}</Badge></span></h5>
@@ -139,6 +135,7 @@ class Categories extends React.Component {
                         Create Category
                     </ModalHeader>
                     <ModalBody>
+                        { this.state.creationError && <Alert color="danger">{this.state.creationError}</Alert> }
                         <Label for="new_category_name" style={{"marginBottom": 0}}>Category Name</Label>
                         <StyledInput id="new_category_name" placeholder="Food" onChange={(e) => this.updateStateObject(e, "new_category", "name")} value={this.state.new_category.name} />
                         <br />
@@ -160,7 +157,8 @@ class Categories extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    oidc: state.oidc
+    oidc: state.oidc,
+    categories: state.ctf.categories
 })
 
 export default connect(mapStateToProps)(Categories)

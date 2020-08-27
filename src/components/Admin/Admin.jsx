@@ -2,11 +2,12 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Container, Row, Col } from 'reactstrap';
-import { GET } from '../../actions';
+import { GET, incrementLoading, decrementLoading } from '../../actions';
 import { Redirect } from 'react-router';
 import { Loader } from '../'
 import Categories from './Categories'
 import Difficulties from './Difficulties'
+import { getCategories, getDifficulties } from '../../actions'
 
 
 class Admin extends Component {
@@ -15,8 +16,8 @@ class Admin extends Component {
 
         this.state = {
             admin: true,
-            isLoading: false,
-            showLoader: false
+            showLoader: false,
+            isLoading: true
         }
     }
 
@@ -35,13 +36,15 @@ class Admin extends Component {
                 })
             }
         })
+        getCategories()
+        getDifficulties()
     }
 
     render () {
         if ( !this.state.admin ) {
             return <Redirect to='/' />
         }
-        else if (this.state.isLoading) {
+        else if (this.props.loading > 0) {
             return <Loader loading={this.state.showLoader} />
         }
         else {
@@ -74,7 +77,8 @@ Admin.propTypes = {
 }
 
 const mapStateToProps = state => ({
-  oidc: state.oidc
+  oidc: state.oidc,
+  loading: state.loading
 })
 
 export default connect(
