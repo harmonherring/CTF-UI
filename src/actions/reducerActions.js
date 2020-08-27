@@ -3,7 +3,9 @@ import {
   INCREMENT_LOADING,
   DECREMENT_LOADING,
   SET_CATEGORIES,
-  SET_DIFFICULTIES
+  SET_DIFFICULTIES,
+  CATEGORY_CHECK_TOGGLE,
+  DIFFICULTY_CHECK_TOGGLE
 } from '../constants'
 
 export function incrementLoading () {
@@ -29,5 +31,25 @@ export function setDifficulties (difficulties) {
   store.dispatch({
     type: SET_DIFFICULTIES,
     difficulties: difficulties
+  })
+}
+
+export function categoryCheckToggle (category, callback = null) {
+  return new Promise((resolve, reject) => {
+    store.dispatch({
+      type: CATEGORY_CHECK_TOGGLE,
+      category: category
+    })
+    resolve()
+  })
+}
+
+export function difficultyCheckToggle (difficulty, callback = null) {
+  return new Promise((resolve, reject) => {
+    store.dispatch({
+      type: DIFFICULTY_CHECK_TOGGLE,
+      difficulty: difficulty
+    })
+    resolve()
   })
 }

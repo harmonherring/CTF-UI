@@ -6,7 +6,11 @@ export {
   decrementLoading,
   incrementLoading,
   setCategories,
-  setDifficulties } from './reducerActions'
+  setDifficulties,
+  categoryCheckToggle,
+  difficultyCheckToggle
+} from './reducerActions'
 export {
   getDifficulties,
-  getCategories } from './api'
+  getCategories
+} from './api'

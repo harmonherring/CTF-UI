@@ -158,7 +158,6 @@ class CreateChallengeModal extends React.Component {
                         create_challenge_error: JSON.parse(request.response).message
                     })
                 } catch (e) {
-                    console.log(e)
                     this.setState({
                         create_challenge_error: "Something went extra wrong. I'm sorry :("
                     })

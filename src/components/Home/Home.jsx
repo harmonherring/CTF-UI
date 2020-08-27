@@ -11,6 +11,12 @@ import CreateChallengeModal from './CreateChallengeModal'
 import { SHOW_MODAL, HIDE_MODAL } from '../../constants'
 import store from '../../store'
 import {
+    categoryCheckToggle,
+    difficultyCheckToggle,
+    getCategories,
+    getDifficulties
+} from '../../actions'
+import {
     Container,
     Row,
     Col,
@@ -21,14 +27,27 @@ import {
     DropdownMenu,
     Label } from 'reactstrap'
 import {
-    StyledInput,
     StyledList,
     LgCentered,
     UploadButton
 } from '../styled'
 
-export const StyledChallenge = styled(Challenge)`
+const StyledChallenge = styled(Challenge)`
     box-shadow 0 1px 4px rgba(0, 0, 0, 0.4);
+`;
+
+const StyledInput = styled(Input)`
+    background: #FFF;
+    height: calc(1em + 1.2rem + 2px) !important;
+    border-radius: .2rem;
+    padding-left: 5px !important;
+    box-shadow: none !important;
+    border: 1px solid #DDD !important;
+    :focus {
+        background: #FFF;
+        border: 1px solid #B0197E !important;
+        box-shadow: 0 0 0 0.2rem rgba(176, 25, 126, 0.25) !important;
+    }
 `;
 
 class Home extends React.Component {
@@ -73,10 +92,11 @@ class Home extends React.Component {
             this.handleBottomScroll()
         })
 
+        getCategories()
+        getDifficulties()
+
         // TODO: Remove userinfo query once 'ctf_admin' becomes an actual role
         this.getUserInfo()
-        .then(() => this.getCategories())
-        .then(() => this.getDifficulties())
         .then(() => this.getChallenges())
         .then(() => this.setState({
             isLoading: false
@@ -129,47 +149,10 @@ class Home extends React.Component {
         })
     }
 
-    getCategories = () => {
-        return GET(this.props.oidc.user.access_token, "/categories?")
-        .then(response => response.json())
-        .then(jsonresponse => {
-            let all_categories = {}
-            jsonresponse.map(category => 
-                all_categories[category.name] = { ...category, checked: true }
-            )
-            this.setState({
-                categories: all_categories
-            })
-        })
-    }
-
-    getDifficulties = () => {
-        return GET(this.props.oidc.user.access_token, "/difficulties")
-        .then(response => response.json())
-        .then(jsonresponse => {
-            let all_difficulties = {}
-            jsonresponse.map(difficulty => 
-                all_difficulties[difficulty.name] = { ...difficulty, checked: true }
-            )
-            this.setState({
-                difficulties: all_difficulties
-            })
-        })
-    }
-
-    toggleCheck = (categoriesOrDifficulties, name) => {
-        let val = this.state[categoriesOrDifficulties][name]
-        val.checked = !val.checked
-        this.setState({
-            [categoriesOrDifficulties]: { ...this.state[categoriesOrDifficulties], [name]: val}
-        })
-        this.getChallenges()
-    }
-
     getCheckedCategories = () => {
         let categories = []
-        for (const category in this.state.categories) {
-            if (this.state.categories[category].checked) {
+        for (const category in this.props.ctf.categories) {
+            if (this.props.ctf.categories[category].checked) {
                 categories.push(category)
             }
         }
@@ -178,8 +161,8 @@ class Home extends React.Component {
 
     getCheckedDifficulties = () => {
         let difficulties = []
-        for (const difficulty in this.state.difficulties) {
-            if (this.state.difficulties[difficulty].checked) {
+        for (const difficulty in this.props.ctf.difficulties) {
+            if (this.props.ctf.difficulties[difficulty].checked) {
                 difficulties.push(difficulty)
             }
         }
@@ -254,7 +237,7 @@ class Home extends React.Component {
     }
 
     render () {
-        if (this.state.isLoading) {
+        if (this.state.isLoading || this.props.loading > 0) {
             return <Loader loading={this.state.showLoader} />
         }
         else {
@@ -263,8 +246,8 @@ class Home extends React.Component {
                     <CreateChallengeModal 
                         isOpen={this.state.showCreateChallengeModal}
                         toggle={this.toggleCreateChallengeModal} 
-                        categories={this.state.categories} 
-                        difficulties={this.state.difficulties}
+                        categories={this.props.ctf.categories}
+                        difficulties={this.props.ctf.difficulties}
                         current_username={this.state.userinfo.preferred_username}
                         // TODO: Implement SocketIO, give user popup that new challenge was added, allow them to reload
                         successCallback={() => {
@@ -302,10 +285,10 @@ class Home extends React.Component {
                                         </DropdownToggle>
                                         <DropdownMenu>
                                             {
-                                                Object.keys(this.state.categories).map( ( name ) => 
+                                                Object.keys(this.props.ctf.categories).map( ( name ) => 
                                                     <DropdownItem toggle={false} key={name}>
                                                         <Label check>
-                                                            <Input type="checkbox" checked={this.state.categories[name].checked} onChange={() => this.toggleCheck("categories", name)} />{' '}
+                                                            <Input type="checkbox" checked={this.props.ctf.categories[name].checked} onChange={() => categoryCheckToggle(name).then(() => this.getChallenges())} />{' '}
                                                             {capitalize(name)}
                                                         </Label>
                                                     </DropdownItem>
@@ -319,10 +302,10 @@ class Home extends React.Component {
                                         </DropdownToggle>
                                         <DropdownMenu>
                                             {
-                                                Object.keys(this.state.difficulties).map( ( name ) => 
+                                                Object.keys(this.props.ctf.difficulties).map( ( name ) => 
                                                     <DropdownItem toggle={false} key={name}>
                                                         <Label check>
-                                                            <Input type="checkbox" checked={this.state.difficulties[name].checked} onChange={() => this.toggleCheck("difficulties", name)} />{' '}
+                                                            <Input type="checkbox" checked={this.props.ctf.difficulties[name].checked} onChange={() => difficultyCheckToggle(name).then(() => this.getChallenges())} />{' '}
                                                             {capitalize(name)}
                                                         </Label>
                                                     </DropdownItem>
@@ -373,7 +356,8 @@ Home.propTypes = {
 
 const mapStateToProps = state => ({
     oidc: state.oidc,
-    loading: state.loading
+    loading: state.loading,
+    ctf: state.ctf
 })
 
 const mapDispatchToProps = dispatch => ({

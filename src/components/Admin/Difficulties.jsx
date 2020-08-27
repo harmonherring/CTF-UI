@@ -95,7 +95,7 @@ class Difficulties extends React.Component {
                 { this.state.deletionError ? <Alert color="danger">{this.state.deletionError}</Alert> : "" }
                 <ListGroup style={{"marginBottom": "20px"}}>
                     {
-                        this.props.difficulties.map(difficulty => 
+                        Object.entries(this.props.difficulties).map(([_,difficulty]) => 
                             <StyledListItem key={difficulty.name}>
                                 <h5 style={{"margin": 0}}><span className="float-left">{capitalize(difficulty.name)}</span><span className="float-right"><StyledTrash size={18} onClick={() => this.deleteDifficulty(difficulty.name)} /> <Badge pill color="primary">{difficulty.count}</Badge></span></h5>
                             </StyledListItem>

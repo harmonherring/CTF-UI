@@ -113,7 +113,7 @@ class Categories extends React.Component {
                 { this.state.deletionError && <Alert color="danger">{this.state.deletionError}</Alert> }
                 <ListGroup style={{"marginBottom": "20px"}}>
                     {
-                        this.props.categories.map(category => 
+                        Object.entries(this.props.categories).map( ([_, category]) => 
                             <React.Fragment key={category.name}>
                                 <StyledListItem id={remove_spaces(category.name) + "-popover"} onMouseEnter={() => this.setState({[remove_spaces(category.name) + "-popover"]: true})} onMouseLeave={() => this.setState({[remove_spaces(category.name) + "-popover"]: false})} >
                                     <h5 style={{"margin": 0}}><span className="float-left">{capitalize(category.name)}</span> <span className="float-right"><StyledTrash size={18} onClick={() => this.deleteCategory(category.name)} /> <Badge pill color="primary">{category.count}</Badge></span></h5>

@@ -7,7 +7,9 @@ import {
   INCREMENT_LOADING,
   DECREMENT_LOADING,
   SET_CATEGORIES,
-  SET_DIFFICULTIES
+  SET_DIFFICULTIES,
+  CATEGORY_CHECK_TOGGLE,
+  DIFFICULTY_CHECK_TOGGLE
 } from '../constants'
 
 function apis (state = {
@@ -54,14 +56,36 @@ function loading (state = 0, action) {
 }
 
 function ctfReducer (state = {
-  categories: [],
-  difficulties: []
+  categories: {},
+  difficulties: {}
 }, action) {
   switch (action.type) {
     case SET_CATEGORIES:
       return Object.assign({}, { ...state }, { categories: action.categories })
     case SET_DIFFICULTIES:
       return Object.assign({}, { ...state }, { difficulties: action.difficulties })
+    case CATEGORY_CHECK_TOGGLE:
+      return {
+        ...state,
+        categories: {
+          ...state.categories,
+          [action.category]: {
+            ...state.categories[action.category],
+            checked: !state.categories[action.category].checked
+          }
+        }
+      }
+    case DIFFICULTY_CHECK_TOGGLE:
+      return {
+        ...state,
+        difficulties: {
+          ...state.difficulties,
+          [action.difficulty]: {
+            ...state.difficulties[action.difficulty],
+            checked: !state.difficulties[action.difficulty].checked
+          }
+        }
+      }
     default:
       return state
   }
