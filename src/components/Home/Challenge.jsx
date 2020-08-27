@@ -1,97 +1,20 @@
 import React, {Component} from 'react'
-import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { Badge, Row, Col } from 'reactstrap'
-import { FaFlag, FaRegTrashAlt, FaAngleDown } from 'react-icons/fa'
+import { FaFlag, FaAngleDown } from 'react-icons/fa'
 import { capitalize } from '../../utils'
 import ReactMarkdown from 'react-markdown'
 import CodeBlock from '../CodeBlock'
 import Moment from 'react-moment'
-
-const StyledTrash = styled(FaRegTrashAlt)`
-    color: #E51C23;
-    visibility: hidden;
-    opacity: 0.5;
-    transition: opacity .2s;
-    margin-bottom: 5px;
-    
-    &:hover {
-        cursor: pointer;
-        opacity: 1;
-    }
-`;
-
-const ChallengeContainer = styled.div`
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-    background-color: #fff;
-    border-radius: .25rem;
-
-    &:hover ${StyledTrash} {
-        visibility: visible;
-    }
-`;
-
-const ChallengeBody = styled.div`
-    padding: 1.25rem;
-    border-top-left-radius: .25rem;
-    border-top-right-radius: .25rem;
-`;
-
-const ChallengeFooter = styled.div`
-    background-color: rgba(0, 0, 0, 0.03);
-    padding: .75rem 1.25rem;
-    border-bottom-left-radius: .25rem;
-    border-bottom-right-radius: .25rem;
-`;
-
-const BadgeWrapper = styled.h5`
-    display: inline-block;
-    font-size: 15px;
-    margin: 2px;
-`;
-
-const Overlay = styled.div`
-    position: absolute;
-    bottom: calc(2.5rem + 23px);
-    left: 0;
-    text-align: center;
-    margin: 0 35px;
-    padding: 0;
-    width: 100%;
-    background-image: linear-gradient(to bottom, transparent, #FFF);
-    height: 100px;
-    visibility: ${props => props.clicked ? "hidden !important" : "visible"};
-
-    @media (max-width: 575px) {
-        width: 79%;
-    }
-
-    @media (min-width: 576px) {
-        width: 440px;
-    }
-
-    @media (min-width: 768px) {
-        width: 620px;
-    }
-
-    @media (min-width: 992px) {
-        width: 860px;
-    }
-
-    @media (min-width: 1200px) { 
-        width: 1040px;
-    }
-
-    &:hover {
-        cursor: pointer
-    }
-`;
-
-const OverflowContainer = styled.div`
-    cursor: pointer !important;
-    max-height: ${props => props.clicked ? "none !important" : "10rem !important"};
-    overflow: hidden;
-`;
+import {
+    ChallengeContainer,
+    ChallengeBody,
+    BadgeWrapper,
+    StyledTrash,
+    OverflowContainer,
+    Overlay,
+    ChallengeFooter
+} from '../styled'
 
 class Challenge extends Component {
     constructor(props) {
@@ -131,7 +54,7 @@ class Challenge extends Component {
                          <Col>
                             <h2 className="float-right">
                                 {
-                                    (this.props.admin || this.props.submitter_username === this.props.current_username) && <StyledTrash onClick={() => this.props.deleteChallenge(this.props.id, this.props.title)} />
+                                    (this.props.admin || this.props.submitter_username === this.props.current_username) && <StyledTrash style={{'marginBottom': '5px'}} onClick={() => this.props.deleteChallenge(this.props.id, this.props.title)} />
                                 }
                                 &nbsp; 
                                 {
