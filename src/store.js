@@ -5,11 +5,18 @@ import { routerMiddleware } from 'connected-react-router'
 import createRootReducer from './reducers'
 import userManager from './userManager'
 
-const initialState = {}
+const initialState = {
+  ctf: {
+    difficulties: {},
+    challenges: {},
+    categories: {}
+  }
+}
 const history = createBrowserHistory()
 
 const middleware = compose(
-  applyMiddleware(routerMiddleware(history))
+  applyMiddleware(routerMiddleware(history)),
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 )
 
 const store = createStore(

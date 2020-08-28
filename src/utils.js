@@ -9,3 +9,5 @@ export function capitalize(phrase) {
 export function remove_spaces(text) {
     return text.replace(/\s/g, '')
 }
+
+export const isEmpty = obj => Object.keys(obj).length === 0;

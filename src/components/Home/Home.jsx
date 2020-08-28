@@ -1,20 +1,20 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import Challenge from './Challenge'
 import styled from 'styled-components'
 import { Loader } from '../'
 import { GET, DELETE } from '../../actions'
 import { FaRegEdit } from 'react-icons/fa'
-import { capitalize } from '../../utils'
 import CreateChallengeModal from './CreateChallengeModal'
 import { SHOW_MODAL, HIDE_MODAL } from '../../constants'
 import store from '../../store'
+import { capitalize } from '../../utils'
 import {
     categoryCheckToggle,
     difficultyCheckToggle,
     getCategories,
-    getDifficulties
+    getDifficulties,
+    getChallenges
 } from '../../actions'
 import {
     Container,
@@ -94,10 +94,10 @@ class Home extends React.Component {
 
         getCategories()
         getDifficulties()
+        this.getChallenges(true)
 
         // TODO: Remove userinfo query once 'ctf_admin' becomes an actual role
         this.getUserInfo()
-        .then(() => this.getChallenges())
         .then(() => this.setState({
             isLoading: false
         }))
@@ -111,7 +111,7 @@ class Home extends React.Component {
                 Promise.all([this.setState({
                     limit: this.state.limit + this.state.page_size
                 })])
-                .then(() => this.getChallenges())
+                .then(() => this.getChallenges(false))
                 setTimeout(() => {
                     this.canExtend = true
                 }, 1000)
@@ -126,26 +126,24 @@ class Home extends React.Component {
         })
     }
 
-    getChallenges = () => {
-        this.setState({
-            loading_challenges: true
-        })
-        return GET(this.props.oidc.user.access_token, "/challenges?categories=" + this.getCheckedCategories() + 
-                                                      "&difficulties=" + this.getCheckedDifficulties() + 
-                                                      "&search=" + this.state.search_query +
-                                                      "&sort_by=" + this.state.sort_by +
-                                                      "&order_by=" + this.state.order_by + 
-                                                      "&limit=" + this.state.limit +
-                                                      "&offset=" + this.state.offset)
-        .then(response => response.json())
-        .then(jsonresponse => {
-            if (jsonresponse.length < this.state.limit) {
-                this.canExtend = false
+    getChallenges = (reset) => {
+        getChallenges(
+            this.getCheckedCategories(),
+            this.getCheckedDifficulties(),
+            this.state.search_query,
+            this.state.sort_by,
+            this.state.order_by,
+            this.state.limit,
+            this.state.offset,
+            'nonBlockingLoad',
+            reset
+        )
+        .then(() => {
+            if (Object.keys(this.props.ctf.challenges).length % this.state.limit !== 0) {
+                this.setState({
+                    canExtend: false
+                })
             }
-            this.setState({
-                challenges: jsonresponse,
-                loading_challenges: false
-            })
         })
     }
 
@@ -222,7 +220,7 @@ class Home extends React.Component {
             search_query: e.target.value
         })
         this.timer = setTimeout(() => {
-            this.getChallenges()
+            this.getChallenges(true)
         }, 350)
     }
 
@@ -233,11 +231,11 @@ class Home extends React.Component {
             sort_by: sortParams.sort_by,
             order_by: sortParams.order_by
         })])
-        .then(() => this.getChallenges())
+        .then(() => this.getChallenges(true))
     }
 
     render () {
-        if (this.state.isLoading || this.props.loading > 0) {
+        if (this.props.loaders.blockingLoad > 0) {
             return <Loader loading={this.state.showLoader} />
         }
         else {
@@ -288,7 +286,7 @@ class Home extends React.Component {
                                                 Object.keys(this.props.ctf.categories).map( ( name ) => 
                                                     <DropdownItem toggle={false} key={name}>
                                                         <Label check>
-                                                            <Input type="checkbox" checked={this.props.ctf.categories[name].checked} onChange={() => categoryCheckToggle(name).then(() => this.getChallenges())} />{' '}
+                                                            <Input type="checkbox" checked={this.props.ctf.categories[name].checked} onChange={() => categoryCheckToggle(name).then(() => this.getChallenges(true))} />{' '}
                                                             {capitalize(name)}
                                                         </Label>
                                                     </DropdownItem>
@@ -305,7 +303,7 @@ class Home extends React.Component {
                                                 Object.keys(this.props.ctf.difficulties).map( ( name ) => 
                                                     <DropdownItem toggle={false} key={name}>
                                                         <Label check>
-                                                            <Input type="checkbox" checked={this.props.ctf.difficulties[name].checked} onChange={() => difficultyCheckToggle(name).then(() => this.getChallenges())} />{' '}
+                                                            <Input type="checkbox" checked={this.props.ctf.difficulties[name].checked} onChange={() => difficultyCheckToggle(name).then(() => this.getChallenges(true))} />{' '}
                                                             {capitalize(name)}
                                                         </Label>
                                                     </DropdownItem>
@@ -320,8 +318,9 @@ class Home extends React.Component {
                             <UploadButton onClick={() => this.toggleCreateChallengeModal()} color="primary" size="lg" className="float-lg-right">Create <FaRegEdit style={{"marginBottom": "5px"}} size={20} /></UploadButton>
                         </Col>
                     </Row>
+                    <Loader loading={this.props.loaders.nonBlockingLoad > 0} />
                     {
-                        this.state.challenges.map(challenge => 
+                        Object.entries(this.props.ctf.challenges).map(([_, challenge]) => 
                             <Row key={challenge.id}>
                                 <Col>
                                     <StyledChallenge 
@@ -343,27 +342,18 @@ class Home extends React.Component {
                             </Row>
                         )
                     }
-                    <Loader loading={this.state.loading_challenges} />
                 </Container>
             );
         }
     }
 }
 
-Home.propTypes = {
-    oidc: PropTypes.any
-}
-
 const mapStateToProps = state => ({
     oidc: state.oidc,
-    loading: state.loading,
+    loaders: state.loaders,
     ctf: state.ctf
 })
 
-const mapDispatchToProps = dispatch => ({
-})
-
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
+    mapStateToProps
 )(Home)

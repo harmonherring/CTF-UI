@@ -44,7 +44,7 @@ class Admin extends Component {
         if ( !this.state.admin ) {
             return <Redirect to='/' />
         }
-        else if (this.props.loading > 0) {
+        else if (this.props.loaders.blockingLoad > 0) {
             return <Loader loading={this.state.showLoader} />
         }
         else {
@@ -78,7 +78,7 @@ Admin.propTypes = {
 
 const mapStateToProps = state => ({
   oidc: state.oidc,
-  loading: state.loading
+  loaders: state.loaders
 })
 
 export default connect(

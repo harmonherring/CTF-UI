@@ -3,8 +3,8 @@ export { default as POST } from './post'
 export { default as PUT } from './put'
 export { default as DELETE } from './delete'
 export {
-  decrementLoading,
-  incrementLoading,
+  decrementLoader,
+  incrementLoader,
   setCategories,
   setDifficulties,
   categoryCheckToggle,
@@ -12,5 +12,6 @@ export {
 } from './reducerActions'
 export {
   getDifficulties,
-  getCategories
+  getCategories,
+  getChallenges
 } from './api'

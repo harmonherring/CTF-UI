@@ -4,12 +4,13 @@ import { connectRouter } from 'connected-react-router'
 import {
   SHOW_MODAL,
   HIDE_MODAL,
-  INCREMENT_LOADING,
-  DECREMENT_LOADING,
+  INCREMENT_LOADER,
+  DECREMENT_LOADER,
   SET_CATEGORIES,
   SET_DIFFICULTIES,
   CATEGORY_CHECK_TOGGLE,
-  DIFFICULTY_CHECK_TOGGLE
+  DIFFICULTY_CHECK_TOGGLE,
+  SET_CHALLENGES
 } from '../constants'
 
 function apis (state = {
@@ -44,12 +45,21 @@ action) {
   }
 }
 
-function loading (state = 0, action) {
+function loaders (state = {
+  blockingLoad: 0,
+  nonBlockingLoad: 0
+}, action) {
   switch (action.type) {
-    case INCREMENT_LOADING:
-      return state + 1
-    case DECREMENT_LOADING:
-      return state - 1
+    case INCREMENT_LOADER:
+      return {
+        ...state,
+        [action.loader]: state[action.loader] + 1
+      }
+    case DECREMENT_LOADER:
+      return {
+        ...state,
+        [action.loader]: state[action.loader] - 1
+      }
     default:
       return state
   }
@@ -57,11 +67,15 @@ function loading (state = 0, action) {
 
 function ctfReducer (state = {
   categories: {},
-  difficulties: {}
+  difficulties: {},
+  challenges: {}
 }, action) {
   switch (action.type) {
     case SET_CATEGORIES:
-      return Object.assign({}, { ...state }, { categories: action.categories })
+      return {
+        ...state,
+        categories: action.categories
+      }
     case SET_DIFFICULTIES:
       return Object.assign({}, { ...state }, { difficulties: action.difficulties })
     case CATEGORY_CHECK_TOGGLE:
@@ -86,6 +100,11 @@ function ctfReducer (state = {
           }
         }
       }
+    case SET_CHALLENGES:
+      return {
+        ...state,
+        challenges: action.challenges
+      }
     default:
       return state
   }
@@ -95,7 +114,7 @@ export default (history) => combineReducers({
   router: connectRouter(history),
   oidc: oidcReducer,
   modal: modalReducer,
-  loading,
+  loaders,
   ctf: ctfReducer,
   apis
 })
