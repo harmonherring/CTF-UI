@@ -28,8 +28,8 @@ function modalReducer (state = {
     type: '',
     text: '',
     title: '',
-    continueButtonText: '',
-    continueButtonCallback: null,
+    actionButtonText: '',
+    actionButtonCallback: null,
     exitButtonText: '',
     exitCallback: null
   }
@@ -68,7 +68,7 @@ function loaders (state = {
 function ctfReducer (state = {
   categories: {},
   difficulties: {},
-  challenges: {}
+  challenges: []
 }, action) {
   switch (action.type) {
     case SET_CATEGORIES:

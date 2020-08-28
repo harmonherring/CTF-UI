@@ -8,7 +8,9 @@ export {
   setCategories,
   setDifficulties,
   categoryCheckToggle,
-  difficultyCheckToggle
+  difficultyCheckToggle,
+  createModal,
+  hideModal
 } from './reducerActions'
 export {
   getDifficulties,

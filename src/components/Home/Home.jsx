@@ -6,10 +6,10 @@ import { Loader } from '../'
 import { GET, DELETE } from '../../actions'
 import { FaRegEdit } from 'react-icons/fa'
 import CreateChallengeModal from './CreateChallengeModal'
-import { SHOW_MODAL, HIDE_MODAL } from '../../constants'
-import store from '../../store'
 import { capitalize } from '../../utils'
 import {
+    createModal,
+    hideModal,
     categoryCheckToggle,
     difficultyCheckToggle,
     getCategories,
@@ -34,7 +34,7 @@ import {
 
 const StyledChallenge = styled(Challenge)`
     box-shadow 0 1px 4px rgba(0, 0, 0, 0.4);
-`;
+`
 
 const StyledInput = styled(Input)`
     background: #FFF;
@@ -48,7 +48,7 @@ const StyledInput = styled(Input)`
         border: 1px solid #B0197E !important;
         box-shadow: 0 0 0 0.2rem rgba(176, 25, 126, 0.25) !important;
     }
-`;
+`
 
 class Home extends React.Component {
     constructor(props) {
@@ -57,26 +57,16 @@ class Home extends React.Component {
         this.canExtend = true
 
         this.state = {
-            page_size: 10,
-            limit: 10,
+            page_size: 1,
+            limit: 1,
             offset: 1,
-            isLoading: true,
             showLoader: false,
-            sort_by: "",
-            order_by: "",
-            dropdownOpen: false,
-            categories: {},
-            difficulties: {},
-            error: "",
-            deletionModal: false,
-            new_challenge: {
-                tags: []
-            },
-            search_query: "",
+            sort_by: '',
+            order_by: '',
+            search_query: '',
             userinfo: {
-                preferred_username: ""
+                preferred_username: ''
             },
-            loading_challenges: false,
             showCreateChallengeModal: false,
         }
     }
@@ -98,10 +88,6 @@ class Home extends React.Component {
 
         // TODO: Remove userinfo query once 'ctf_admin' becomes an actual role
         this.getUserInfo()
-        .then(() => this.setState({
-            isLoading: false
-        }))
-
     }
 
     handleBottomScroll = () => {
@@ -109,7 +95,7 @@ class Home extends React.Component {
             if (this.oldScroll < window.scrollY) {
                 this.canExtend = false
                 Promise.all([this.setState({
-                    limit: this.state.limit + this.state.page_size
+                    offset: this.state.offset + 1
                 })])
                 .then(() => this.getChallenges(false))
                 setTimeout(() => {
@@ -138,11 +124,9 @@ class Home extends React.Component {
             'nonBlockingLoad',
             reset
         )
-        .then(() => {
-            if (Object.keys(this.props.ctf.challenges).length % this.state.limit !== 0) {
-                this.setState({
-                    canExtend: false
-                })
+        .then((isEmpty) => {
+            if ((Object.keys(this.props.ctf.challenges).length % this.state.limit !== 0) || isEmpty) {
+                this.canExtend = false
             }
         })
     }
@@ -176,23 +160,18 @@ class Home extends React.Component {
     }
 
     setError = (message) => {
-        this.setState({
-            error: message
-        })
+        
     }
 
     toggleDeleteModal = (id, title) => {
-        store.dispatch({
-            type: SHOW_MODAL,
-            modal: {
-                type: 'GenericModal',
-                title: 'Confirm Deletion',
-                text: `Confirm deletion of Challenge "${title}"`,
-                exitButtonText: 'Cancel',
-                actionButtonText: 'Delete',
-                actionButtonCallback: () => this.deleteChallenge(id)
-            }
-        })
+        createModal(
+            'GenericModal',
+            'Confirm Deletion',
+            `Confirm deletion of CHallenge "${title}"`,
+            'Delete',
+            () => this.deleteChallenge(id),
+            'Cancel',
+        )
     }
 
     deleteChallenge = (challenge_id) => {
@@ -208,9 +187,7 @@ class Home extends React.Component {
                 }
         })
         .then(() => {
-            store.dispatch({
-                type: HIDE_MODAL
-            })
+            hideModal()
         })
     }
 
@@ -250,15 +227,14 @@ class Home extends React.Component {
                         // TODO: Implement SocketIO, give user popup that new challenge was added, allow them to reload
                         successCallback={() => {
                             this.toggleCreateChallengeModal()
-                            store.dispatch({
-                                type: SHOW_MODAL,
-                                modal: {
-                                    type: 'GenericModal',
-                                    title: 'Success',
-                                    text: 'Your challenge was successfully submitted. Once it\'s been moved to permanent storage it will become available. Thanks!',
-                                    exitButtonText: 'Close',
-                                }
-                            })}
+                            createModal(
+                                'GenericModal',
+                                'Success',
+                                'Your challenge was successfully submitted. Once it\'s been moved to permanent storage it will become available. Thanks!',
+                                undefined,
+                                undefined,
+                                'Close'
+                            )}
                         }
                     />
                     <Row>
@@ -318,9 +294,8 @@ class Home extends React.Component {
                             <UploadButton onClick={() => this.toggleCreateChallengeModal()} color="primary" size="lg" className="float-lg-right">Create <FaRegEdit style={{"marginBottom": "5px"}} size={20} /></UploadButton>
                         </Col>
                     </Row>
-                    <Loader loading={this.props.loaders.nonBlockingLoad > 0} />
                     {
-                        Object.entries(this.props.ctf.challenges).map(([_, challenge]) => 
+                        this.props.ctf.challenges.map(challenge => 
                             <Row key={challenge.id}>
                                 <Col>
                                     <StyledChallenge 

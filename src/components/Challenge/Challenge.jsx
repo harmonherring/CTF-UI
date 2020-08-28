@@ -1,24 +1,8 @@
 import React from 'react'
-import { 
-    Alert, 
-    Badge, 
-    Container, 
-    Row, 
-    Col, 
-    Card, 
-    CardHeader, 
-    CardBody, 
-    Button, 
-    Table, 
-    InputGroup, 
-    InputGroupAddon, 
-    Input, 
-    InputGroupText } from 'reactstrap'
 import { connect } from 'react-redux'
 import Loader from '../Loader'
 import { GET, POST, DELETE } from '../../actions'
-import { FaRegArrowAltCircleDown as Download, FaFlag, FaTimes, FaCheck, FaRegTrashAlt } from 'react-icons/fa'
-import { GoPlus } from 'react-icons/go'
+import { FaRegArrowAltCircleDown as Download, FaFlag, FaTimes, FaCheck } from 'react-icons/fa'
 import styled from 'styled-components'
 import BounceLoader from 'react-spinners/BounceLoader'
 import { capitalize } from '../../utils'
@@ -26,10 +10,29 @@ import CreateFlagModal from './CreateFlagModal'
 import CreateHintModal from './CreateHintModal'
 import ReactMarkdown from 'react-markdown'
 import CodeBlock from '../CodeBlock'
-
-const SpacedRow = styled(Row)`
-    margin-bottom: 20px;
-`;
+import {
+    Alert,
+    Badge,
+    Container,
+    Row,
+    Col,
+    Card,
+    CardHeader,
+    CardBody,
+    Button,
+    Table,
+    InputGroup,
+    InputGroupAddon,
+    Input,
+    InputGroupText 
+} from 'reactstrap'
+import {
+    SpacedRow,
+    DownloadButton,
+    StyledPlus,
+    HoverableTr,
+    StyledTrash
+} from '../styled'
 
 const StyledInput = styled(Input)`
     border: 1px solid #DDD !important;
@@ -37,43 +40,6 @@ const StyledInput = styled(Input)`
     border-bottom-left-radius: 0.25rem !important;
     box-shadow: none !important;
     padding-left: 5px !important;
-`;
-
-const StyledPlus = styled(GoPlus)`
-    vertical-align: top !important;
-    opacity: 0.5;
-    transition: opacity .2s;
-
-    &:hover {
-        opacity: 1;
-        cursor: pointer;
-    }
-`;
-
-const StyledTrash = styled(FaRegTrashAlt)`
-    color: #E51C23;
-    visibility: hidden;
-    opacity: 0.5;
-    transition: opacity .2s;
-    
-    &:hover {
-        cursor: pointer;
-        opacity: 1;
-    }
-`;
-
-const HoverableTr = styled.tr`
-    &:hover ${StyledTrash} {
-        visibility: visible;
-    }
-`;
-
-const DownloadButton = styled.a`
-    color: #FFF !important;
-
-    &:hover {
-        cursor: pointer;
-    }
 `;
 
 class Challenge extends React.Component {

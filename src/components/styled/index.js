@@ -1,9 +1,11 @@
 import styled from 'styled-components'
 import { FaRegTrashAlt } from 'react-icons/fa'
+import { GoPlus } from 'react-icons/go'
 import {
     Input,
     ListGroupItem,
-    Button
+    Button,
+    Row
 } from 'reactstrap'
 
 export const StyledInput = styled(Input)`
@@ -148,3 +150,32 @@ export const LgCentered = styled.div`
         display: block;
     }
 `
+
+export const SpacedRow = styled(Row)`
+    margin-bottom: 20px;
+`;
+
+export const StyledPlus = styled(GoPlus)`
+    vertical-align: top !important;
+    opacity: 0.5;
+    transition: opacity .2s;
+
+    &:hover {
+        opacity: 1;
+        cursor: pointer;
+    }
+`;
+
+export const HoverableTr = styled.tr`
+    &:hover ${StyledTrash} {
+        visibility: visible;
+    }
+`;
+
+export const DownloadButton = styled.a`
+    color: #FFF !important;
+
+    &:hover {
+        cursor: pointer;
+    }
+`;

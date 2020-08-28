@@ -47,20 +47,12 @@ export function getChallenges (categories, difficulties, search, sort, order, li
     `/challenges?categories=${categories}&difficulties=${difficulties}&search=${search}&sort_by=${sort}&order_by=${order}&limit=${limit}&offset=${offset}`)
     .then(response => response.json())
     .then(jsonresponse => {
-      const newChallenges = {}
-      for (const value of jsonresponse) {
-        newChallenges[value.id] = value
-      }
+      if (Array.isArray(jsonresponse) && jsonresponse.length === 0) return 1
       if (reset) {
-        return setChallenges(newChallenges)
+        setChallenges(jsonresponse).then(() => { if (loader) decrementLoader(loader) })
       } else {
-        return setChallenges({
-          ...state.challenges,
-          ...newChallenges
-        })
+        setChallenges(state.ctf.challenges.concat(jsonresponse)).then(() => { if (loader) decrementLoader(loader) })
       }
-    })
-    .then(() => {
-      if (loader) decrementLoader(loader)
+      return 0
     })
 }

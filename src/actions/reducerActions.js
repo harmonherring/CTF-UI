@@ -1,5 +1,7 @@
 import store from '../store'
 import {
+  SHOW_MODAL,
+  HIDE_MODAL,
   INCREMENT_LOADER,
   DECREMENT_LOADER,
   SET_CATEGORIES,
@@ -8,6 +10,35 @@ import {
   DIFFICULTY_CHECK_TOGGLE,
   SET_CHALLENGES
 } from '../constants'
+
+export function createModal (
+  type = 'GenericModal',
+  title = '',
+  text = '',
+  actionButtonText = '',
+  actionButtonCallback = null,
+  exitButtonText = '',
+  exitCallback = null
+) {
+  store.dispatch({
+    type: SHOW_MODAL,
+    modal: {
+      type,
+      title,
+      text,
+      actionButtonText,
+      actionButtonCallback,
+      exitButtonText,
+      exitCallback
+    }
+  })
+}
+
+export function hideModal () {
+  store.dispatch({
+    type: HIDE_MODAL
+  })
+}
 
 export function incrementLoader (loader) {
   store.dispatch({

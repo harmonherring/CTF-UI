@@ -8,7 +8,7 @@ import userManager from './userManager'
 const initialState = {
   ctf: {
     difficulties: {},
-    challenges: {},
+    challenges: [],
     categories: {}
   }
 }
