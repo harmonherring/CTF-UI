@@ -57,8 +57,7 @@ class Home extends React.Component {
         this.canExtend = true
 
         this.state = {
-            page_size: 1,
-            limit: 1,
+            limit: 10,
             offset: 1,
             showLoader: false,
             sort_by: '',
@@ -78,16 +77,25 @@ class Home extends React.Component {
             })
         }, 1000)
 
-        window.addEventListener('scroll', () => {
-            this.handleBottomScroll()
-        })
+        window.addEventListener('scroll', this.handleBottomScroll)
 
         getCategories()
         getDifficulties()
-        this.getChallenges(true)
+
+        if (this.props.ctf.challenges.length === 0) {
+            this.getChallenges(true)
+        } else {
+            this.setState({
+                offset: (this.props.ctf.challenges.length / this.state.limit)
+            })
+        }
 
         // TODO: Remove userinfo query once 'ctf_admin' becomes an actual role
         this.getUserInfo()
+    }
+
+    componentWillUnmount = () => {
+        window.removeEventListener('scroll', this.handleBottomScroll)
     }
 
     handleBottomScroll = () => {
