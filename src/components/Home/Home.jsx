@@ -55,6 +55,7 @@ class Home extends React.Component {
         super(props)
 
         this.canExtend = true
+        this.timer = null
 
         this.state = {
             limit: 10,
@@ -86,7 +87,7 @@ class Home extends React.Component {
             this.getChallenges(true)
         } else {
             this.setState({
-                offset: (this.props.ctf.challenges.length / this.state.limit)
+                offset: Math.ceil(this.props.ctf.challenges.length / this.state.limit)
             })
         }
 
@@ -106,7 +107,7 @@ class Home extends React.Component {
                     offset: this.state.offset + 1
                 })])
                 .then(() => this.getChallenges(false))
-                setTimeout(() => {
+                this.timer = setTimeout(() => {
                     this.canExtend = true
                 }, 1000)
             }
@@ -135,6 +136,7 @@ class Home extends React.Component {
         .then((isEmpty) => {
             if ((Object.keys(this.props.ctf.challenges).length % this.state.limit !== 0) || isEmpty) {
                 this.canExtend = false
+                window.clearTimeout(this.timer)
             }
         })
     }
@@ -175,7 +177,7 @@ class Home extends React.Component {
         createModal(
             'GenericModal',
             'Confirm Deletion',
-            `Confirm deletion of CHallenge "${title}"`,
+            `Confirm deletion of Challenge "${title}"`,
             'Delete',
             () => this.deleteChallenge(id),
             'Cancel',
