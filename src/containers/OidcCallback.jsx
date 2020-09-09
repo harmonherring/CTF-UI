@@ -6,27 +6,13 @@ import { push } from 'connected-react-router'
 import userManager from '../userManager'
 
 class OidcCallback extends React.Component {
-  constructor (props) {
-    super(props)
-    let ctfRedirect = new URLSearchParams(this.props.location.search).get('ctf_redirect')
-
-    // Don't redirect to the callback page
-    if (ctfRedirect === '/callback') {
-      ctfRedirect = '/'
-    }
-
-    this.state = {
-      redirect: ctfRedirect
-    }
-  }
-
   render () {
     const { dispatch } = this.props
 
     return (
       <CallbackComponent
         userManager={userManager}
-        successCallback={() => dispatch(push(this.state.redirect))}
+        successCallback={() => dispatch(push('/'))}
         errorCallback={(error) => {
           // TODO: Redirect to a more friendly error page
           dispatch(push('/'))

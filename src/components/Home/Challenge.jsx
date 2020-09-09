@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { Badge, Row, Col } from 'reactstrap'
 import { FaFlag, FaAngleDown } from 'react-icons/fa'
 import { capitalize } from '../../utils'
@@ -41,7 +42,7 @@ class Challenge extends Component {
                 <ChallengeBody>
                     <Row>
                          <Col>
-                            <h1 style={{"display": "block", "marginBottom": "0"}}><a href={window.location.href + "challenge/" + this.props.id} style={{"textDecoration": "none"}}>{this.props.title}</a></h1>
+                            <h1 style={{"display": "block", "marginBottom": "0"}}><Link to={`challenge/${this.props.id}`} style={{"textDecoration": "none"}}>{this.props.title}</Link></h1>
                             <BadgeWrapper><Badge color="primary">{capitalize(this.props.difficulty)}</Badge></BadgeWrapper>
                             <BadgeWrapper><Badge color="primary">{capitalize(this.props.category)}</Badge></BadgeWrapper>
                             <br />

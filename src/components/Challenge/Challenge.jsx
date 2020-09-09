@@ -24,7 +24,7 @@ import {
     InputGroup,
     InputGroupAddon,
     Input,
-    InputGroupText 
+    InputGroupText
 } from 'reactstrap'
 import {
     SpacedRow,
@@ -89,13 +89,24 @@ class Challenge extends React.Component {
         })
     }
 
-    getChallenge = ( challenge_id ) => {
+    getChallenge = (challenge_id) => {
+        for (const challenge in this.props.challenges) {
+            if (challenge.id === challenge_id) {
+                this.setState({
+                    data: challenge
+                }, () => {
+                    this.calculateCompletedFlags()
+                    .then(() => this.assignRelativeIds())
+                })
+                return
+            }
+        }
         return GET(this.props.oidc.user.access_token, "/challenges/" + challenge_id)
         .then(response => response.json())
         .then(jsonresponse => {
             this.setState({
                 data: jsonresponse
-            }); 
+            });
             return Promise.resolve("success")})
         .then(() => this.calculateCompletedFlags())
         .then(() => this.assignRelativeIds())
@@ -111,7 +122,7 @@ class Challenge extends React.Component {
 
         this.setState({
             completed_flags: count
-        }) 
+        })
         return Promise.resolve("Success")
     }
 
@@ -142,7 +153,7 @@ class Challenge extends React.Component {
             }
         })
     }
-    
+
     attemptFlag = () => {
         this.setState({
             flag_loading: true,
@@ -248,13 +259,13 @@ class Challenge extends React.Component {
                             <Badge style={{"margin": "2px", "fontSize": "12px"}} color="primary">{capitalize(this.state.data.category)}</Badge>
                             <br />
                             {
-                                this.state.data.tags.map(tag => 
-                                    <Badge key={tag} style={{"margin": "2px", "fontSize": "12px"}} color="secondary">{tag}</Badge>  
+                                this.state.data.tags.map(tag =>
+                                    <Badge key={tag} style={{"margin": "2px", "fontSize": "12px"}} color="secondary">{tag}</Badge>
                                 )
                             }
                         </Col>
                         <Col lg="3">
-                            {this.state.data.download && 
+                            {this.state.data.download &&
                                 <DownloadButton href={this.state.data.download} className="btn btn-primary float-lg-right"><Download size={18} style={{"verticalAlign": "top"}} /> Download</DownloadButton>
                             }
                         </Col>
@@ -282,7 +293,6 @@ class Challenge extends React.Component {
                                                 {this.state.completed_flags}/{Object.keys(this.state.data.flags).length} <FaFlag style={{"verticalAlign": "top"}} />
                                             </span>
                                         }
-                                        
                                     </h2>
                                 </CardHeader>
                                 <CardBody>
@@ -296,7 +306,7 @@ class Challenge extends React.Component {
                                         </thead>
                                         <tbody>
                                             {
-                                                Object.entries(this.state.data.flags).map( ([id, data]) => 
+                                                Object.entries(this.state.data.flags).map( ([id, data]) =>
                                                     <HoverableTr key={id} className={data.flag ? "table-success" : "table-danger"}>
                                                         <th>{data.relative_id}</th><td>{data.flag ? data.flag : "NOT FOUND"}</td>
                                                         <td>{data.point_value} <StyledTrash onClick={() => this.deleteFlag(data.id)} className="float-right" size={18} /></td>
@@ -320,7 +330,7 @@ class Challenge extends React.Component {
                                     </Row>
                                 </CardBody>
                             </Card>
-                            <CreateFlagModal 
+                            <CreateFlagModal
                                 successCallback={() => this.getFlags().then(() => this.closeModal())}
                                 closeModal={this.closeMOdal}
                                 isOpen={this.state.show_modal === "create_flag"}
@@ -335,10 +345,10 @@ class Challenge extends React.Component {
                                 <CardBody>
                                     {this.state.hint_error ? <Alert color="danger">{this.state.hint_error}</Alert> : <></>}
                                     {
-                                        Object.entries(this.state.data.flags).map( ([flag_id, flag_data]) => 
+                                        Object.entries(this.state.data.flags).map( ([flag_id, flag_data]) =>
                                             <section key={flag_id}>
                                                 <h3>
-                                                    Flag {flag_data.relative_id} 
+                                                    Flag {flag_data.relative_id}
                                                     {
                                                         (this.state.data.submitter === this.state.userinfo.preferred_username) &&
                                                         <StyledPlus color="#4CAF50" size={26} onClick={() => {this.setState({current_flag_id: flag_data.id}); this.showModal("create_hint")}} />
@@ -353,7 +363,7 @@ class Challenge extends React.Component {
                                                     </thead>
                                                     <tbody>
                                                         {
-                                                            Object.entries(this.state.data.flags[flag_id].hints).map( ([hint_id, hint_data]) => 
+                                                            Object.entries(this.state.data.flags[flag_id].hints).map( ([hint_id, hint_data]) =>
                                                                 <HoverableTr key={hint_id}>
                                                                     {hint_data.hint ? <td>{hint_data.hint}</td> : <th>NOT PURCHASED</th>}
                                                                     <td className="text-right">
@@ -369,7 +379,7 @@ class Challenge extends React.Component {
                                         )
                                     }
                                 </CardBody>
-                                <CreateHintModal 
+                                <CreateHintModal
                                     isOpen={this.state.show_modal === "create_hint"}
                                     successCallback={() => this.getFlags().then(() => this.closeModal())}
                                     flag_id={this.state.current_flag_id}
@@ -385,7 +395,9 @@ class Challenge extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    oidc: state.oidc
+    oidc: state.oidc,
+    challenges: state.ctf.challenges,
+    ctf: state.ctf
 })
 
 export default connect(
