@@ -122,17 +122,26 @@ class Home extends React.Component {
     }
 
     getChallenges = (reset) => {
-        getChallenges(
-            this.getCheckedCategories(),
-            this.getCheckedDifficulties(),
-            this.state.search_query,
-            this.state.sort_by,
-            this.state.order_by,
-            this.state.limit,
-            this.state.offset,
-            'nonBlockingLoad',
-            reset
-        )
+        Promise.resolve({
+            if (reset) {
+                this.setState({
+                    offset: 1
+                })
+            }
+        })
+        .then(() => {
+            getChallenges(
+                this.getCheckedCategories(),
+                this.getCheckedDifficulties(),
+                this.state.search_query,
+                this.state.sort_by,
+                this.state.order_by,
+                this.state.limit,
+                this.state.offset,
+                'nonBlockingLoad',
+                reset
+            )
+        })
         .then((isEmpty) => {
             if ((Object.keys(this.props.ctf.challenges).length % this.state.limit !== 0) || isEmpty) {
                 this.canExtend = false
