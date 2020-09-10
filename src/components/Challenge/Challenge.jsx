@@ -47,11 +47,12 @@ class Challenge extends React.Component {
         super(props)
 
         const { challenge_id } = this.props.match.params
+        
 
         this.state = {
             is_loading: true,
             show_loader: false,
-            challenge_id: challenge_id,
+            challenge_id: parseInt(challenge_id),
             data: {},
             completed_flags: 0,
             flag_attempt: "",
@@ -90,7 +91,7 @@ class Challenge extends React.Component {
     }
 
     getChallenge = (challenge_id) => {
-        for (const challenge in this.props.challenges) {
+        for (const challenge of this.props.challenges) {
             if (challenge.id === challenge_id) {
                 this.setState({
                     data: challenge
@@ -98,7 +99,7 @@ class Challenge extends React.Component {
                     this.calculateCompletedFlags()
                     .then(() => this.assignRelativeIds())
                 })
-                return
+                return Promise.resolve()
             }
         }
         return GET(this.props.oidc.user.access_token, "/challenges/" + challenge_id)
