@@ -11,7 +11,8 @@ import {
   NavBar,
   Admin,
   Challenge,
-  Scoreboard
+  Scoreboard,
+  About
 } from './index'
 import { GET } from '../actions'
 import ModalRoot from './Modals/ModalRoot'
@@ -51,6 +52,7 @@ class App extends Component {
               <ProtectedRoute exact path="/admin" component={Admin} />
               <ProtectedRoute exact path="/challenge/:challenge_id" component={Challenge} />
               <ProtectedRoute exact path="/scoreboard" component={Scoreboard} />
+              <ProtectedRoute exact path="/about" component={About} />
             </Switch>
           </Container>
         </Container>
