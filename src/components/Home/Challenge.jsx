@@ -68,7 +68,11 @@ class Challenge extends Component {
                     <hr />
                     <OverflowContainer onClick={() => this.setState({clicked: true})} clicked={this.state.clicked}>
                         <ReactMarkdown renderers={{ code: CodeBlock }} source={this.props.description} escapeHtml={true} />
-                        <Overlay onClick={() => this.setState({clicked: true})} clicked={this.state.clicked}><FaAngleDown style={{"bottom": "0", "position": "absolute"}} size={30} /></Overlay>
+                        <Overlay onClick={() => this.setState({clicked: true})} clicked={this.state.clicked}>
+                            <div style={{ width: '100%', position: 'absolute', bottom: '20px' }}>
+                                <FaAngleDown style={{bottom: "0", display: 'block', margin: '0 auto -100px'}} size={30} />
+                            </div>
+                        </Overlay>
                     </OverflowContainer>
                 </ChallengeBody>
                 <ChallengeFooter>

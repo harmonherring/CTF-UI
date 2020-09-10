@@ -68,6 +68,7 @@ class Home extends React.Component {
                 preferred_username: ''
             },
             showCreateChallengeModal: false,
+            endMessage: '',
         }
     }
 
@@ -141,13 +142,17 @@ class Home extends React.Component {
                 'nonBlockingLoad',
                 reset
             )
+            .then((isEmpty) => {
+                if ((Object.keys(this.props.ctf.challenges).length % this.state.limit !== 0) || isEmpty) {
+                    this.canExtend = false
+                    window.clearTimeout(this.timer)
+                    this.setState({
+                        endMessage: 'END'
+                    })
+                }
+            })
         })
-        .then((isEmpty) => {
-            if ((Object.keys(this.props.ctf.challenges).length % this.state.limit !== 0) || isEmpty) {
-                this.canExtend = false
-                window.clearTimeout(this.timer)
-            }
-        })
+        
     }
 
     getCheckedCategories = () => {
@@ -336,6 +341,9 @@ class Home extends React.Component {
                             </Row>
                         )
                     }
+                    <Row>
+                        <h3 style={{margin: '20px auto 0'}}>{ this.state.endMessage }</h3>
+                    </Row>
                 </Container>
             );
         }
