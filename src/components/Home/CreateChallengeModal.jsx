@@ -53,7 +53,7 @@ class CreateChallengeModal extends React.Component {
             new_tag: "",
             new_challenge: {
                 tags: [],
-                author: this.props.current_username,
+                author: props.oidc.user.profile.preferred_username,
                 title: "",
                 difficulty: "",
                 category: "",

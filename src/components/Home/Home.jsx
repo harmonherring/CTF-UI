@@ -31,6 +31,7 @@ import {
     LgCentered,
     UploadButton
 } from '../styled'
+import { setChallenges } from '../../actions/reducerActions'
 
 const StyledChallenge = styled(Challenge)`
     box-shadow 0 1px 4px rgba(0, 0, 0, 0.4);
@@ -203,9 +204,7 @@ class Home extends React.Component {
         .then(response => Promise.all([response.status, response.json()]))
         .then(response => {
                 if (response[0] === 200) {
-                    this.setState({
-                        challenges: this.state.challenges.filter(challenge => challenge.id !== challenge_id)
-                    })
+                    setChallenges(this.props.ctf.challenges.filter(challenge => challenge.id !== challenge_id))
                 } else {
                     this.setError("Unable to delete challenge")
                 }
