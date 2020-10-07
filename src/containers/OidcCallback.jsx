@@ -6,11 +6,11 @@ import { push } from 'connected-react-router'
 import userManager from '../userManager'
 
 class OidcCallback extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
 
     this.ctfRedirect = new URLSearchParams(this.props.location.search).get('ctf_redirect')
-    if (!this.ctfRedirect) {
+    if (!this.ctfRedirect || this.ctfRedirect === '/callback') {
       this.ctfRedirect = '/'
     }
   }
