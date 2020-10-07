@@ -4,7 +4,7 @@ const userManagerConfig = {
   client_id: process.env.REACT_APP_SSO_CLIENT_ID,
   redirect_uri: `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}/callback?ctf_redirect=${window.location.pathname}`,
   response_type: 'code',
-  scope: 'openid profile',
+  scope: 'openid profile groups',
   authority: process.env.REACT_APP_SSO_AUTHORITY,
   silent_redirect_uri: `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}/silent_renew.html`,
   automaticSilentRenew: true,

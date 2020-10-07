@@ -72,12 +72,27 @@ function ctfReducer (state = {
 }, action) {
   switch (action.type) {
     case SET_CATEGORIES:
+      // This ensures that existing challenges keep their checked state and deleted challenges are erased
+      Object.keys(state.categories).forEach(key => {
+        if (Object.keys(action.categories).includes(key)) {
+          action.categories[key].checked = state.categories[key].checked
+        }
+      })
       return {
         ...state,
         categories: action.categories
       }
     case SET_DIFFICULTIES:
-      return Object.assign({}, { ...state }, { difficulties: action.difficulties })
+      // This ensures that existing difficulties keep their checked state and deleted difficulties are erased
+      Object.keys(state.difficulties).forEach(key => {
+        if (Object.keys(action.difficulties).includes(key)) {
+          action.difficulties[key].checked = state.difficulties[key].checked
+        }
+      })
+      return {
+        ...state,
+        difficulties: action.difficulties
+      }
     case CATEGORY_CHECK_TOGGLE:
       return {
         ...state,
