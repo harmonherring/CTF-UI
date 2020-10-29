@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import Loader from '../Loader'
-import { GET, POST, DELETE } from '../../actions'
+import { GET, POST, DELETE, createModal, hideModal } from '../../actions'
 import { FaRegArrowAltCircleDown as Download, FaFlag, FaTimes, FaCheck } from 'react-icons/fa'
 import styled from 'styled-components'
 import BounceLoader from 'react-spinners/BounceLoader'
@@ -197,6 +197,7 @@ class Challenge extends React.Component {
     deleteFlag = (flag_id) => {
         DELETE(this.props.oidc.user.access_token, "/flags/" + flag_id)
         .then(() => this.getFlags())
+        .then(() => hideModal())
     }
 
     purchaseHint = (hint_id) => {
@@ -225,6 +226,7 @@ class Challenge extends React.Component {
                 this.getFlags()
             }
         })
+        .then(() => hideModal())
     }
 
     getTags = () => {
@@ -244,6 +246,17 @@ class Challenge extends React.Component {
         .then(jsonresponse => this.setState({
           userinfo: jsonresponse
         }))
+    }
+
+    toggleDeleteModal = (id, name, deleteFunction) => {
+        createModal(
+            'GenericModal',
+            'Confirm Deletion',
+            `Confirm deletion of ${name}`,
+            'Delete',
+            () => deleteFunction(id),
+            'Cancel',
+        )
     }
 
     render() {
@@ -310,7 +323,7 @@ class Challenge extends React.Component {
                                                 Object.entries(this.state.data.flags).map( ([id, data]) =>
                                                     <HoverableTr key={id} className={data.flag ? "table-success" : "table-danger"}>
                                                         <th>{data.relative_id}</th><td>{data.flag ? data.flag : "NOT FOUND"}</td>
-                                                        <td>{data.point_value} <StyledTrash onClick={() => this.deleteFlag(data.id)} className="float-right" size={18} /></td>
+                                                        <td>{data.point_value} <StyledTrash onClick={() => this.toggleDeleteModal(data.id, `Flag ${data.relative_id}`, this.deleteFlag)} className="float-right" size={18} /></td>
                                                     </HoverableTr>
                                                 )
                                             }
@@ -368,7 +381,7 @@ class Challenge extends React.Component {
                                                                 <HoverableTr key={hint_id}>
                                                                     {hint_data.hint ? <td>{hint_data.hint}</td> : <th>NOT PURCHASED</th>}
                                                                     <td className="text-right">
-                                                                        {this.state.data.submitter === this.state.userinfo.preferred_username || this.state.userinfo.admin ? <StyledTrash onClick={() => this.deleteHint(hint_data.id)} size={20} /> : <></>} &nbsp;
+                                                                        {this.state.data.submitter === this.state.userinfo.preferred_username || this.state.userinfo.admin ? <StyledTrash onClick={() => this.toggleDeleteModal(hint_data.id, `Hint "${hint_data.hint ? hint_data.hint : "NOT PURCHASED"}"`, this.deleteHint)} size={20} /> : <></>} &nbsp;
                                                                         <Button color="primary" onClick={() => this.purchaseHint(hint_data.id)} disabled={hint_data.hint || this.state.data.flags[flag_id].flag ? true : false}>{hint_data.cost} Points</Button>
                                                                     </td>
                                                                 </HoverableTr>
