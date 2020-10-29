@@ -300,9 +300,9 @@ class Challenge extends React.Component {
                             <Card>
                                 <CardHeader>
                                     <h2 style={{"marginBottom": "0"}}>
-                                        Flags { this.state.data.submitter === this.state.userinfo.preferred_username ? <StyledPlus size={32} color="#4CAF50" onClick={() => this.showModal("create_flag")} /> : ""}
+                                        Flags { this.state.data.submitter === this.props.oidc.user.profile.preferred_username ? <StyledPlus size={32} color="#4CAF50" onClick={() => this.showModal("create_flag")} /> : ""}
                                         {
-                                            !(this.state.data.submitter === this.state.userinfo.preferred_username) &&
+                                            !(this.state.data.submitter === this.props.oidc.user.profile.preferred_username) &&
                                             <span className="float-right" style={{"color": "#4CAF50"}}>
                                                 {this.state.completed_flags}/{Object.keys(this.state.data.flags).length} <FaFlag style={{"verticalAlign": "top"}} />
                                             </span>
@@ -322,8 +322,12 @@ class Challenge extends React.Component {
                                             {
                                                 Object.entries(this.state.data.flags).map( ([id, data]) =>
                                                     <HoverableTr key={id} className={data.flag ? "table-success" : "table-danger"}>
-                                                        <th>{data.relative_id}</th><td>{data.flag ? data.flag : "NOT FOUND"}</td>
-                                                        <td>{data.point_value} <StyledTrash onClick={() => this.toggleDeleteModal(data.id, `Flag ${data.relative_id}`, this.deleteFlag)} className="float-right" size={18} /></td>
+                                                        <th>{data.relative_id}</th>
+                                                        <td>{data.flag ? data.flag : "NOT FOUND"}</td>
+                                                        <td>{data.point_value}</td>
+                                                        <td className="text-right">
+                                                            { this.state.data.submitter === this.props.oidc.user.profile.preferred_username && <StyledTrash onClick={() => this.toggleDeleteModal(data.id, `Flag ${data.relative_id}`, this.deleteFlag)} className="float-right" size={18} /> }
+                                                        </td>
                                                     </HoverableTr>
                                                 )
                                             }
@@ -364,7 +368,7 @@ class Challenge extends React.Component {
                                                 <h3>
                                                     Flag {flag_data.relative_id}
                                                     {
-                                                        (this.state.data.submitter === this.state.userinfo.preferred_username) &&
+                                                        (this.state.data.submitter === this.props.oidc.user.profile.preferred_username) &&
                                                         <StyledPlus color="#4CAF50" size={26} onClick={() => {this.setState({current_flag_id: flag_data.id}); this.showModal("create_hint")}} />
                                                     }
                                                 </h3>
@@ -381,7 +385,7 @@ class Challenge extends React.Component {
                                                                 <HoverableTr key={hint_id}>
                                                                     {hint_data.hint ? <td>{hint_data.hint}</td> : <th>NOT PURCHASED</th>}
                                                                     <td className="text-right">
-                                                                        {this.state.data.submitter === this.state.userinfo.preferred_username || this.state.userinfo.admin ? <StyledTrash onClick={() => this.toggleDeleteModal(hint_data.id, `Hint "${hint_data.hint ? hint_data.hint : "NOT PURCHASED"}"`, this.deleteHint)} size={20} /> : <></>} &nbsp;
+                                                                        {this.state.data.submitter === this.props.oidc.user.profile.preferred_username && <StyledTrash onClick={() => this.toggleDeleteModal(hint_data.id, `Hint "${hint_data.hint ? hint_data.hint : "NOT PURCHASED"}"`, this.deleteHint)} size={20} /> } &nbsp;
                                                                         <Button color="primary" onClick={() => this.purchaseHint(hint_data.id)} disabled={hint_data.hint || this.state.data.flags[flag_id].flag ? true : false}>{hint_data.cost} Points</Button>
                                                                     </td>
                                                                 </HoverableTr>
