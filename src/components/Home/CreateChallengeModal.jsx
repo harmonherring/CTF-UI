@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { capitalize } from '../../utils'
 import { connect } from 'react-redux'
 import ReactMarkdown from 'react-markdown'
+import { FaTimes } from 'react-icons/fa'
 import {
     Alert,
     Col,
@@ -238,7 +239,7 @@ class CreateChallengeModal extends React.Component {
                                 <StyledInput style={{"marginBottom": "8px"}} id="tag" onChange={this.modifyState("new_tag")} onKeyPress={this.checkSubmit} placeholder="Web" value={this.state.new_tag} />
                                 {
                                     this.state.new_challenge.tags.map( (tag) => 
-                                        <NewTag key={tag} onClick={() => this.deleteTag(tag)} color="primary">{tag}</NewTag>
+                                        <NewTag key={tag} onClick={() => this.deleteTag(tag)} color="primary">{tag} <FaTimes /></NewTag>
                                     )
                                 }
                             </FormGroup>
