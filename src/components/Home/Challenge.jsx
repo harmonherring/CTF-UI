@@ -55,7 +55,7 @@ class Challenge extends Component {
                          <Col>
                             <h2 className="float-right">
                                 {
-                                    (this.props.admin || this.props.submitter_username === this.props.current_username) && <StyledTrash style={{'marginBottom': '5px'}} onClick={() => this.props.deleteChallenge(this.props.id, this.props.title)} />
+                                    (this.props.submitter_username === this.props.current_username) && <StyledTrash style={{'marginBottom': '5px'}} onClick={() => this.props.deleteChallenge(this.props.id, this.props.title)} />
                                 }
                                 &nbsp; 
                                 {
